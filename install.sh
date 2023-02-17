@@ -36,8 +36,8 @@ function backupTargetConfigurationFolder() {
 }
 
 function setupHotkeys() {
-    $package_manager install install sxhkdrc
-    $package_manager install install rofi
+    $package_manager install sxhkdrc
+    $package_manager install rofi
     
     backupTargetConfigurationFolder
 
@@ -108,9 +108,9 @@ function setupZSH() {
 
 function setupTerminalUtils() {
     # batcat
-    $package_manager install install bat && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
+    $package_manager install bat && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
     # fzf
-    $package_manager install install fzf
+    $package_manager install fzf
     
     #lsd
     if [ "$package_manager install" = 'sudo apt' ]; then
