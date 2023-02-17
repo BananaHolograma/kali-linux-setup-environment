@@ -43,7 +43,7 @@ function setupHotkeys() {
 
     echo -e "${grayColour}Copying sxhkd configuration files in order to setup hotkeys...${endColour}"
 
-    cp -r "$CURRENT_DIR/config/sxhkd" "$target_home_config_dir"
+    cp -r "$CURRENT_DIR/.config/sxhkd" "$target_home_config_dir"
 
     echo -e "${greenColour} Hotkeys installed and configured with${endColour} ${cyanColour}[ sxhkd ]${endColour}"
 }
@@ -94,9 +94,11 @@ function setupZSH() {
         cp "$HOME"/.zshrc "$config_backup_folder"
     fi
 
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME"/powerlevel10k 
-    echo "source $HOME/powerlevel10k/powerlevel10k.zsh-theme" >> "$HOME"/.zshrc
-
+    if [ ! -d "$HOME"/powerlevel10k ]; then
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME"/powerlevel10k 
+        echo "source $HOME/powerlevel10k/powerlevel10k.zsh-theme" >> "$HOME"/.zshrc
+    fi
+    
     # Fix the Java Problem on .zshrc after powerlevel10k installation
     sed -i '1s/^/export _JAVA_AWT_WM_NONREPARENTING=1\n/' "$HOME"/.zshrc
     cat ./zsh/.zshrc >> "$HOME"/.zshrc
