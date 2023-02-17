@@ -79,7 +79,7 @@ function setupAndConfigureKitty() {
     
     curl -sLo kitty.txz "$base_url/$kitty_release"
     sudo mkdir -p $kitty_dir && sudo tar -xf kitty.txz -C $kitty_dir && rm kitty.txz
-    sudo ln -s $kitty_dir/bin/kitty /usr/local/bin/kitty
+    sudo ln -sf $kitty_dir/bin/kitty /usr/local/bin/kitty
 
     cp -r "$CURRENT_DIR/config/kitty" "$target_home_config_dir"
 
@@ -101,16 +101,17 @@ function setupZSH() {
     
     # Fix the Java Problem on .zshrc after powerlevel10k installation
     sed -i '1s/^/export _JAVA_AWT_WM_NONREPARENTING=1\n/' "$HOME"/.zshrc
-    cat ./zsh/.zshrc >> "$HOME"/.zshrc
+    cat ./config/zsh/.zshrc >> "$HOME"/.zshrc
+    # Init the assistant for installation of the powerlevel10k theme
     zsh
 
 }
 
 function setupTerminalUtils() {
     # batcat
-    $package_manager bat && mkdir -p ~/.local/bin && ln -s /usr/bin/batcat ~/.local/bin/bat
+    $package_manager install bat && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
     # fzf
-    $package_manager fzf
+    $package_manager install fzf
     
     #lsd
     if [ "$package_manager" = 'sudo apt' ]; then
