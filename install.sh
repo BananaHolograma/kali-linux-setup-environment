@@ -43,7 +43,7 @@ function setupHotkeys() {
 
     echo -e "${grayColour}Copying sxhkd configuration files in order to setup hotkeys...${endColour}"
 
-    cp -r "$CURRENT_DIR/.config/sxhkd" "$target_home_config_dir"
+    cp -r "$CURRENT_DIR/config/sxhkd" "$target_home_config_dir"
 
     echo -e "${greenColour} Hotkeys installed and configured with${endColour} ${cyanColour}[ sxhkd ]${endColour}"
 }
