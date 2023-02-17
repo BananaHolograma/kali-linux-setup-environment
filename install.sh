@@ -36,9 +36,9 @@ function backupTargetConfigurationFolder() {
 }
 
 function setupHotkeys() {
-    #  REMEMBER TO UNCOMMENT THIS ON THE LINUX TARGET SYSTEM
-    #$package_manager sxhkdrc
-    #$package_manager rofi
+    $package_manager install install sxhkdrc
+    $package_manager install install rofi
+    
     backupTargetConfigurationFolder
 
     echo -e "${grayColour}Copying sxhkd configuration files in order to setup hotkeys...${endColour}"
@@ -108,12 +108,12 @@ function setupZSH() {
 
 function setupTerminalUtils() {
     # batcat
-    $package_manager install bat && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
+    $package_manager install install bat && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
     # fzf
-    $package_manager install fzf
+    $package_manager install install fzf
     
     #lsd
-    if [ "$package_manager" = 'sudo apt' ]; then
+    if [ "$package_manager install" = 'sudo apt' ]; then
         local lsd_release=''
 
         case $system_architecture in
@@ -130,7 +130,7 @@ function setupTerminalUtils() {
         curl -sLo lsd_release.deb https://github.com/Peltoche/lsd/releases/download/0.23.1/$lsd_release
         sudo dpkg -i lsd_release.deb
     else
-        $package_manager lsd
+        $package_manager install lsd
     fi
 }
 
