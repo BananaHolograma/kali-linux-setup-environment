@@ -38,6 +38,7 @@ function backupTargetConfigurationFolder() {
 function setupHotkeys() {
     #  REMEMBER TO UNCOMMENT THIS ON THE LINUX TARGET SYSTEM
     #$package_manager sxhkdrc
+    #$package_manager rofi
     backupTargetConfigurationFolder
 
     echo -e "${grayColour}Copying sxhkd configuration files in order to setup hotkeys...${endColour}"
@@ -94,7 +95,41 @@ function setupZSH() {
     fi
 
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME"/powerlevel10k 
-    echo "source $HOME/powerlevel10k/powerlevel10k.zsh-theme" >>~/.zshrc
+    echo "source $HOME/powerlevel10k/powerlevel10k.zsh-theme" >> "$HOME"/.zshrc
+
+    # Fix the Java Problem on .zshrc after powerlevel10k installation
+    sed -i '1s/^/export _JAVA_AWT_WM_NONREPARENTING=1\n/' "$HOME"/.zshrc
+    cat ./zsh/.zshrc >> "$HOME"/.zshrc
+    zsh
+
+}
+
+function setupTerminalUtils() {
+    # batcat
+    $package_manager bat && mkdir -p ~/.local/bin && ln -s /usr/bin/batcat ~/.local/bin/bat
+    # fzf
+    $package_manager fzf
+    
+    #lsd
+    if [ "$package_manager" = 'sudo apt' ]; then
+        local lsd_release=''
+
+        case $system_architecture in
+        arm64 | aarch64)
+            lsd_release="lsd_0.23.1_arm64.deb"
+        ;;
+        64-bit | x86_64)
+            lsd_release="lsd_0.23.1_amd64.deb"
+        ;;
+        i386| i486| i586| i686)
+        lsd_release="lsd_0.23.1_i686.deb"
+        ;;
+    esac
+        curl -sLo lsd_release.deb https://github.com/Peltoche/lsd/releases/download/0.23.1/$lsd_release
+        sudo dpkg -i lsd_release.deb
+    else
+        $package_manager lsd
+    fi
 }
 
 ###
@@ -103,4 +138,5 @@ function setupZSH() {
 setupHotkeys
 setupCustomTerminalFont
 setupAndConfigureKitty
+setupTerminalUtils
 setupZSH
