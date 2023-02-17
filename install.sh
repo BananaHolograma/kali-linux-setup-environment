@@ -97,13 +97,12 @@ function setupZSH() {
     if [ ! -d "$HOME"/powerlevel10k ]; then
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME"/powerlevel10k 
         echo "source $HOME/powerlevel10k/powerlevel10k.zsh-theme" >> "$HOME"/.zshrc
+        # Fix the Java Problem on .zshrc after powerlevel10k installation
+        sed -i '1s/^/export _JAVA_AWT_WM_NONREPARENTING=1\n/' "$HOME"/.zshrc
+        cat "$CURRENT_DIR"/config/zsh/.zshrc >> "$HOME"/.zshrc
+        # Init the assistant for installation of the powerlevel10k theme
+        zsh  
     fi
-    
-    # Fix the Java Problem on .zshrc after powerlevel10k installation
-    sed -i '1s/^/export _JAVA_AWT_WM_NONREPARENTING=1\n/' "$HOME"/.zshrc
-    cat "$CURRENT_DIR"/config/zsh/.zshrc >> "$HOME"/.zshrc
-    # Init the assistant for installation of the powerlevel10k theme
-    zsh
 
 }
 
