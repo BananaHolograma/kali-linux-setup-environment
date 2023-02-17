@@ -101,7 +101,7 @@ function setupZSH() {
     
     # Fix the Java Problem on .zshrc after powerlevel10k installation
     sed -i '1s/^/export _JAVA_AWT_WM_NONREPARENTING=1\n/' "$HOME"/.zshrc
-    cat ./config/zsh/.zshrc >> "$HOME"/.zshrc
+    cat "$CURRENT_DIR"/config/zsh/.zshrc >> "$HOME"/.zshrc
     # Init the assistant for installation of the powerlevel10k theme
     zsh
 
