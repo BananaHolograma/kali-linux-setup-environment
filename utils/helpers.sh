@@ -20,21 +20,12 @@ function whichPackageManager() {
     elif [ -n "$(command -v zypper)" ]; then
 	package_manager="sudo zypper"
     else 
-      echo -e "None of the following package managers are found (apt,yum,dnf,pacman or zypper)"
-      echo -e ""
+      echo -e "None of the following package managers are found (apt,yum,dnf,pacman or zypper)\n"
       exit 1;
     fi
 
     echo "$package_manager"
 }
 
-function backupTargetConfigurationFolder() {
-    if [ -d "$target_home_config_dir" ]; then
-        echo -e "${greenColour}Detected existing .config folder${endColour}, ${yellowColour}creating backup on${endColour} ${cyanColour}$target_home_config_dir/backup/.${USER}_config${endColour}"
-        
-        local -r config_backup_folder=$target_home_config_dir/backup/
-        mkdir -p "$config_backup_folder" && cp -r "$target_home_config_dir" "$config_backup_folder" && mv "$config_backup_folder"/.config "$config_backup_folder/.${USER}_config"
-    fi
-}
 
 export -f whichPackageManager

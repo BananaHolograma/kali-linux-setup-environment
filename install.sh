@@ -5,17 +5,7 @@ set -u
 CURRENT_DIR=$(pwd)
 
 source "$CURRENT_DIR/utils/helpers.sh"
-
-# ANSII ESCAPE CODE COLOURS
-greenColour='\033[0;32m'
-redColour='\033[0;31m'
-blueColour='\033[0;34m'
-yellowColour='\033[1;33m'
-purpleColour='\033[0;35m'
-cyanColour='\033[0;36m'
-grayColour='\033[0;37m'
-
-endColour='\033[0m'
+source "$CURRENT_DIR/utils/colors.sh"
 
 # Auto detect the package manager for the target OS
 package_manager=$(whichPackageManager)
@@ -36,7 +26,7 @@ function backupTargetConfigurationFolder() {
 }
 
 function setupHotkeys() {
-    $package_manager install sxhkdrc
+    $package_manager install sxhkd
     $package_manager install rofi
     
     backupTargetConfigurationFolder
@@ -56,6 +46,10 @@ function setupCustomTerminalFont() {
     curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip && unzip -oq Hack.zip -d "$fonts_dir" && rm Hack.zip
 
     echo -e "${greenColour} Fonts installed and configured in${endColour} ${cyanColour}[ $fonts_dir ]${endColour}"
+}
+
+function installTerminatorMultiplexor() {
+    $package_manager install terminator
 }
 
 function setupAndConfigureKitty() {
@@ -139,6 +133,7 @@ function setupTerminalUtils() {
 ###
 setupHotkeys
 setupCustomTerminalFont
-setupAndConfigureKitty
+#setupAndConfigureKitty
+installTerminatorMultiplexor
 setupTerminalUtils
 setupZSH
