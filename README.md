@@ -4,6 +4,8 @@ This is my initial configuration I apply on all my ArchLinux installations, it c
 
 # Requirements
 
+## Gnome
+
 This configuration is based on gnome desktop environment because I set up some custom keyboard layouts by using the package `gnome-tweaks`. So make sure you have installed the gnome desktop environment before start the script to get the best of it.
 In case you don't have it yet on your ArchLinux just install them and reboot the system:
 
@@ -15,6 +17,12 @@ systemctl enable gdm # gnome display manager
 systemctl enable gdm.service
 
 reboot
+```
+
+## Packages
+
+```bash
+sudo pacman -s git sudo
 ```
 
 ## Recommendations
