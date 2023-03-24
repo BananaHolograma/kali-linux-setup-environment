@@ -49,7 +49,8 @@ while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; d
     fi
 done
 
-HOME_DIR="$HOME/$SELECTED_USER"
+HOME_DIR="/home/$SELECTED_USER"
+ROOT_DIR="$HOME"
 
 
 # Common folders to work
@@ -182,7 +183,7 @@ function localeGeneration() {
 
     $prefix sed -i 's/^#es_ES/es_ES/g' /etc/locale.gen
     $prefix sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
-    $prefix sed -i 's/^#en_US ISO-8859-1/en_US.ISO-8859-1/' /etc/locale.gen
+    $prefix sed -i 's/^#en_US ISO-8859-1/en_US ISO-8859-1/' /etc/locale.gen
 
     locale-gen 
 
@@ -206,3 +207,6 @@ setupVim
 setupFirejail
 setupNVM
 setupZSH
+
+# Copy the entire configuration to root home folder in order to have same configuration
+cp "$HOME_DIR/.config" "$ROOT_DIR"
