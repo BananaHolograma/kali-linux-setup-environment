@@ -23,12 +23,18 @@ config_backup_folder=$target_home_config_dir/backup/${USER}.config
 
 echo -e "${yellowColour}The package manager for the entire installation will be${endColour} ${cyanColour}$package_manager${endColour}"
 
-function backupTargetConfigurationFolder() {
+function prepareEnvironmentForTheInstallation() {
     if [ -d "$target_home_config_dir" ]; then
         echo -e "${greenColour}Detected existing .config folder${endColour}, ${yellowColour}creating backup on${endColour} ${cyanColour}$config_backup_folder"
 
-        mkdir -p "$config_backup_folder" && cp -r "$target_home_config_dir" "$config_backup_folder"
+        mkdir -p "$config_backup_folder" \
+            && cp -r "$target_home_config_dir" "$config_backup_folder"
     fi
+
+    echo -e "$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
+    "$package_manager" -S base-devel git curl
+    "$package_manager" -Syu
+
 }
 
 function setupCustomTerminalFont() {
@@ -73,7 +79,7 @@ function setupZSH() {
         cp "$HOME"/.zshrc "$config_backup_folder"
     fi
 
-    "$package_manager" -S base-devel git zsh
+    "$package_manager" -S zsh
 
     mkdir -p "$ZSH_CONFIG_DIR/plugins"
     touch "$ZSH_CONFIG_DIR/.zsh_history"
@@ -98,8 +104,6 @@ function setupNVM() {
 function setupBlackArchRepository() {
     echo -e "$greenColour Adding blackarch repository to make security packages available in the system$endColour"
     curl -o- https://blackarch.org/strap.sh | bash
-
-    "$package_manager" -Syu
 }
 
 function setupFirejail() {
@@ -127,7 +131,7 @@ function setupTerminalUtils() {
 ###
 # START THE INSTALLATION AND CONFIGURATION PROCESS FOR THE NEW ENVIRONMENT
 ###
-backupTargetConfigurationFolder
+prepareEnvironmentForTheInstallation
 setupBlackArchRepository
 setupCustomTerminalFont
 setupAndConfigureKitty
