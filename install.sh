@@ -82,11 +82,11 @@ function setupVim() {
 }
 
 function setupZSH() {
-    echo -e "${grayColour} Installing and configuring zsh terminal with powerlevel10k theme${endColour}"
+    echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Installing and configuring zsh terminal with powerlevel10k theme$endColour"
     local ZSH_CONFIG_DIR="$HOME/.config/zsh"
 
     if [ -f "$HOME"/.zshrc ]; then
-        echo -e "${greenColour}Detected existing .zshrc file${endColour}, ${yellowColour}creating backup on${endColour} ${cyanColour}$config_backup_folder"
+        echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Detected existing .zshrc file, creating backup on$endColour$cyanColour $config_backup_folder"
         cp "$HOME"/.zshrc "$config_backup_folder"
     fi
 
@@ -104,21 +104,20 @@ function setupZSH() {
 }
 
 function setupNVM() {
-    echo -e "$greenColour Installing NVM (Node Version Manager) and set default LTS version$endColour"
+    echo -e "${grayColour}[ NVM ]$endColour$yellowColour Installing NVM (Node Version Manager) and set as default the LTS version$endColour"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 
-    export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-
-    nvm install --lts && nvm use --lts
+    nvm install --lts \
+        && nvm use --lts
 }
 
 function setupBlackArchRepository() {
-    echo -e "$greenColour Adding blackarch repository to make security packages available in the system$endColour"
+    echo -e "${grayColour}[ BLACKARCH ]$endColour Adding blackarch repository to make security packages available in the system$endColour"
     curl -o- https://blackarch.org/strap.sh | bash
 }
 
 function setupFirejail() {
-    echo -e "$greenColour Installing firejail and downloading stable version of firefox$endColour"
+    echo -e "${grayColour}[ FIREJAIL ]$endColour Installing firejail and downloading stable version of firefox$endColour"
     "$package_manager"-Sy firejail 
 
     # We installed yay to get access firefox binaries
@@ -133,8 +132,8 @@ function setupFirejail() {
 }
 
 function setupTerminalUtils() {
-    echo -e "$greenColour Installing and configuring terminal utils (bat, lsd ,fzf)...$endColour"
-    # batcat, lsd, fzf
+    echo -e "${grayColour}[ TERMINAL UTILS ]$endColour Installing and configuring terminal utils (bat, lsd ,fzf)...$endColour"
+    
     $package_manager -S bat fzf lsd \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
 }
