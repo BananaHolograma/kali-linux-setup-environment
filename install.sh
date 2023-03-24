@@ -13,7 +13,7 @@ grayColour='\033[0;37m'
 
 endColour='\033[0m'
 
-CURRENT_DIR=$(pwd)
+CURRENT_DIR=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 
 package_manager="sudo pacman"
 
@@ -82,22 +82,28 @@ function setupZSH() {
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git  "$ZSH_CONFIG_DIR/plugins"
     cp "$CURRENT_DIR/config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
 
+    chsh -s "$(which zsh)" # Change default shell for the actual user
     zsh
 }
 
 function setupNVM() {
+    echo -e "$greenColour Installing NVM (Node Version Manager) and set default LTS version$endColour"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+    export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
+    nvm install --lts && nvm use --lts
 }
 
 function setupBlackArchRepository() {
-    curl -O https://blackarch.org/strap.sh
-
-    chmod +x && sudo bash strap.sh
+    echo -e "$greenColour Adding blackarch repository to make security packages available in the system$endColour"
+    curl -o- https://blackarch.org/strap.sh | bash
 
     "$package_manager" -Syu
 }
 
 function setupFirejail() {
+    echo -e "$greenColour Installing firejail and downloading stable version of firefox$endColour"
     "$package_manager"-Sy firejail 
 
     # We installed yay to get access firefox binaries
@@ -112,6 +118,7 @@ function setupFirejail() {
 }
 
 function setupTerminalUtils() {
+    echo -e "$greenColour Installing and configuring terminal utils (bat, lsd ,fzf)...$endColour"
     # batcat, lsd, fzf
     $package_manager -S bat fzf lsd \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
@@ -120,11 +127,12 @@ function setupTerminalUtils() {
 ###
 # START THE INSTALLATION AND CONFIGURATION PROCESS FOR THE NEW ENVIRONMENT
 ###
+backupTargetConfigurationFolder
+setupBlackArchRepository
 setupCustomTerminalFont
 setupAndConfigureKitty
 setupTerminalUtils
 setupVim
-setupBlackArchRepository
 setupFirejail
 setupNVM
 setupZSH
