@@ -17,6 +17,20 @@ systemctl enable gdm.service
 reboot
 ```
 
+## Recommendations
+
+It's recommended to run this script as non-privileged user like root, create a new user for that:
+
+```bash
+useradd -m -g users -G wheel <username>
+passwd <username>
+
+pacman -S sudo
+
+# Uncomment line %wheel ALL=(ALL:ALL) ALL
+EDITOR=vim visudo
+```
+
 # Configuration
 
 The `config` folder contains all the related configurations that are important for the script because it takes this files and move them to the

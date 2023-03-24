@@ -15,16 +15,9 @@ endColour='\033[0m'
 
 CURRENT_DIR=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 
-package_manager="sudo pacman"
-
 function is_root() {
      [[ "$(id -u)" -eq 0 ]]
 }
-
-# Remove sudo when the actual user is root
-if is_root; then
-    package_manager="pacman"
-fi
 
 # Common folders to work
 target_home_config_dir="$HOME/.config"
@@ -40,8 +33,8 @@ function prepareEnvironmentForTheInstallation() {
 
     echo -e "${grayColour}[ PREPARATION ]$endColour$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
    
-    "$package_manager" -Syu
-    "$package_manager" -S base-devel git curl sudo
+    sudo pacman -Syu
+    sudo pacman -S base-devel git curl sudo
 }
 
 function setupCustomTerminalFont() {
@@ -63,7 +56,7 @@ function setupCustomTerminalFont() {
 function setupAndConfigureKitty() {
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Installing and configuring kitty GPU based terminal...$endColour"
 
-    "$package_manager" -S kitty \
+    sudo pacman -S kitty \
         && cp -r "$CURRENT_DIR/config/kitty" "$target_home_config_dir"
 
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Kitty GPU based terminal installed and configured on$endColour$cyanColour [ $(which kitty) ]$endColour"
@@ -73,7 +66,7 @@ function setupVim() {
     echo -e "${grayColour}[ VIM ]$endColour Installing and configuring VIM editor with basic initial configuration"
     local VIM_CONFIG_DIR="$CURRENT_DIR/config/vim/"
     
-    "$package_manager" -S vi vim
+    sudo pacman -S vi vim
 
     if [ -f "$HOME"/.vimrc ]; then
         echo -e "${grayColour}[ VIM ]$endColour$yellowColour Detected existing .vimrc file, creating backup on$endColour$cyanColour $config_backup_folder"
@@ -94,7 +87,7 @@ function setupZSH() {
         cp "$HOME"/.zshrc "$config_backup_folder"
     fi
 
-    "$package_manager" -S zsh
+    sudo pacman -S zsh
 
     mkdir -p "$ZSH_CONFIG_DIR/plugins"
     touch "$ZSH_CONFIG_DIR/.zsh_history"
@@ -122,7 +115,7 @@ function setupBlackArchRepository() {
 
 function setupFirejail() {
     echo -e "${grayColour}[ FIREJAIL ]$endColour Installing firejail and downloading stable version of firefox$endColour"
-    "$package_manager"-Sy firejail 
+    sudo pacman-Sy firejail 
 
     # We installed yay to get access firefox binaries
     git clone https://aur.archlinux.org/yay-git.git
@@ -138,7 +131,7 @@ function setupFirejail() {
 function setupTerminalUtils() {
     echo -e "${grayColour}[ TERMINAL UTILS ]$endColour Installing and configuring terminal utils (bat, lsd ,fzf)...$endColour"
     
-    $package_manager -S bat fzf lsd \
+    sudo pacman -S bat fzf lsd \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
 
     source "$HOME/.zshrc"
