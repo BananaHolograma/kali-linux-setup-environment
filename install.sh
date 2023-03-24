@@ -25,7 +25,7 @@ echo -e "${yellowColour}The package manager for the entire installation will be$
 
 function prepareEnvironmentForTheInstallation() {
     if [ -d "$target_home_config_dir" ]; then
-        echo -e "${greenColour}Detected existing .config folder${endColour}, ${yellowColour}creating backup on${endColour} ${cyanColour}$config_backup_folder"
+        echo -e "${greenColour}Detected existing$endColour$yellowColour .config$endColour$greenColour folder$endColour,$yellowColour creating backup on$endColour $cyanColour$config_backup_folder"
 
         mkdir -p "$config_backup_folder" \
             && cp -r "$target_home_config_dir" "$config_backup_folder"
