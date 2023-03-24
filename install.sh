@@ -28,6 +28,11 @@ function user_exists() {
 SELECTED_USER=''
 create_non_existing_user='n'
 
+if ! is_root; then 
+    echo -e "${yellowColour}[ WARNING ]$endColour$grayColour Run this script with sudo privileges$endColour"
+    exit 1
+fi 
+
 while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; do 
 
     read -rp "Choose a user to apply the configuration: " SELECTED_USER
