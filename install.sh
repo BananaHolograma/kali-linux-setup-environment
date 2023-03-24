@@ -175,15 +175,10 @@ function localeGeneration() {
     echo -e "${grayColour}[ LOCALE ]$endColour Unpacking locales for ES and US to make them available in the system"
    
     local default_keymap='es'
-    local prefix='sudo'
 
-    if is_root; then 
-        prefix=''
-    fi 
-
-    $prefix sed -i 's/^#es_ES/es_ES/g' /etc/locale.gen
-    $prefix sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
-    $prefix sed -i 's/^#en_US ISO-8859-1/en_US ISO-8859-1/' /etc/locale.gen
+    sed -i 's/^#es_ES/es_ES/g' /etc/locale.gen
+    sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+    sed -i 's/^#en_US ISO-8859-1/en_US ISO-8859-1/' /etc/locale.gen
 
     locale-gen 
 
