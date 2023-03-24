@@ -17,28 +17,31 @@ CURRENT_DIR=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 
 package_manager="sudo pacman"
 
+# Remove sudo when the actual user is root
+if [ "$(id -u)" -eq 0 ]; then
+    package_manager="pacman"
+fi
+
 # Common folders to work
 target_home_config_dir="$HOME/.config"
 config_backup_folder=$target_home_config_dir/backup/${USER}.config
 
-echo -e "${yellowColour}The package manager for the entire installation will be${endColour} ${cyanColour}$package_manager${endColour}"
-
 function prepareEnvironmentForTheInstallation() {
     if [ -d "$target_home_config_dir" ]; then
-        echo -e "${greenColour}Detected existing$endColour$yellowColour .config$endColour$greenColour folder$endColour,$yellowColour creating backup on$endColour $cyanColour$config_backup_folder"
+        echo -e "${grayColour}[ PREPARATION ]$endColour ${yellowColour}Detected existing$endColour$cyanColour .config$endColour$yellowColour folder, creating backup on$endColour$cyanColour $config_backup_folder$endColour"
 
         mkdir -p "$config_backup_folder" \
             && cp -r "$target_home_config_dir" "$config_backup_folder"
     fi
 
-    echo -e "$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
-    "$package_manager" -S base-devel git curl
+    echo -e "${grayColour}[ PREPARATION ]$endColour$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
+   
     "$package_manager" -Syu
-
+    "$package_manager" -S base-devel git curl sudo
 }
 
 function setupCustomTerminalFont() {
-    echo -e "${grayColour}Downloading HackNerdFont from${endColour} ${blueColour}https://github.com/ryanoasis/nerd-fonts${endColour}"
+    echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Downloading HackNerdFont from$endColour$yellowColour https://github.com/ryanoasis/nerd-fonts$endColour"
 
     local fonts_dir="$HOME/.fonts"
     mkdir -p "$fonts_dir"
@@ -49,25 +52,33 @@ function setupCustomTerminalFont() {
         cp "$CURRENT_DIR/config/fonts/HackNerdFont/*" "$fonts_dir"
     fi 
 
-    echo -e "${greenColour} Fonts installed and configured in${endColour} ${cyanColour}[ $fonts_dir ]${endColour}"
+    echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Fonts installed and configured in$endColour$yellowColour $fonts_dir $endColour"
 }
 
 
 function setupAndConfigureKitty() {
-    echo -e "${grayColour}Installing and configuring kitty GPU based terminal...${endColour}"
+    echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Installing and configuring kitty GPU based terminal...$endColour"
 
     "$package_manager" -S kitty \
         && cp -r "$CURRENT_DIR/config/kitty" "$target_home_config_dir"
 
-    echo -e "${greenColour} Kitty GPU based terminal installed and configured on${endColour} ${cyanColour}[ $(which kitty) ]${endColour}"
+    echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Kitty GPU based terminal installed and configured on$endColour$cyanColour [ $(which kitty) ]$endColour"
 }
 
 function setupVim() {
+    echo -e "${grayColour}[ VIM ]$endColour Installing and configuring VIM editor with basic initial configuration"
     local VIM_CONFIG_DIR="$CURRENT_DIR/config/vim/"
     
     "$package_manager" -S vi vim
 
+    if [ -f "$HOME"/.vimrc ]; then
+        echo -e "${grayColour}[ VIM ]$endColour$yellowColour Detected existing .vimrc file, creating backup on$endColour$cyanColour $config_backup_folder"
+        cp "$HOME"/.vimrc "$config_backup_folder"
+    fi
+
     [[ -f "$VIM_CONFIG_DIR/.vimrc" ]] && cp "$VIM_CONFIG_DIR/.vimrc" "$HOME"
+
+    echo -e "${grayColour}[ VIM ]$endColour$yellowColour Created$endColour$cyanColour .vimrc$endColour$yellowColour file on $HOME directory$endColour"
 }
 
 function setupZSH() {
