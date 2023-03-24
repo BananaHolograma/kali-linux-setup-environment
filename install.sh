@@ -17,8 +17,12 @@ CURRENT_DIR=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 
 package_manager="sudo pacman"
 
+function is_root() {
+     [[ "$(id -u)" -eq 0 ]]
+}
+
 # Remove sudo when the actual user is root
-if [ "$(id -u)" -eq 0 ]; then
+if is_root; then
     package_manager="pacman"
 fi
 
@@ -136,12 +140,38 @@ function setupTerminalUtils() {
     
     $package_manager -S bat fzf lsd \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
+
+    source "$HOME/.zshrc"
+}
+
+function localeGeneration() {
+    echo -e "${grayColour}[ LOCALE ]$endColour Unpacking locales for ES and US to make them available in the system"
+   
+    local default_keymap='es'
+    local prefix='sudo'
+
+    if is_root; then 
+        prefix=''
+    fi 
+
+    $prefix sed -i 's/^#es_ES/es_ES/g' /etc/locale.gen
+    $prefix sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+    $prefix sed -i 's/^#en_US ISO-8859-1/en_US.ISO-8859-1/' /etc/locale.gen
+
+    locale-gen 
+
+    echo "KEYMAP=$default_keymap" > /etc/vconsole.conf
+
+    loadkeys $default_keymap
+
+    echo -e "${grayColour}[ LOCALE ]$endColour Finished locale generation, default keymap set as '$default_keymap'"
 }
 
 ###
 # START THE INSTALLATION AND CONFIGURATION PROCESS FOR THE NEW ENVIRONMENT
 ###
 prepareEnvironmentForTheInstallation
+localeGeneration
 setupBlackArchRepository
 setupCustomTerminalFont
 setupAndConfigureKitty

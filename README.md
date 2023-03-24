@@ -13,6 +13,8 @@ pacman -S gnome gnome-tweaks
 systemctl enable gdm # gnome display manager
 # or
 systemctl enable gdm.service
+
+reboot
 ```
 
 # Configuration
@@ -43,8 +45,12 @@ The minimalist setup for zsh with plugins that works for me and I use everyday. 
 # Usage
 
 ```bash
-# Clone the repository
+# Clone the repository with git
 git clone https://github.com/s3r0s4pi3ns/archlinux-post-install-setup.git
+# Or download it and unzip
+curl -O https://github.com/s3r0s4pi3ns/archlinux-post-install-setup/archive/refs/heads/main.zip \
+    && unzip main.zip
+
 # Run the script
-cd archlinux-post-install-setup && bash install.sh
+./archlinux-post-install-setup/install.sh
 ```
