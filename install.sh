@@ -56,6 +56,14 @@ function setupAndConfigureKitty() {
     echo -e "${greenColour} Kitty GPU based terminal installed and configured on${endColour} ${cyanColour}[ $(which kitty) ]${endColour}"
 }
 
+function setupVim() {
+    local VIM_CONFIG_DIR="$CURRENT_DIR/config/vim/"
+    
+    "$package_manager" -S vi vim
+
+    [[ -f "$VIM_CONFIG_DIR/.vimrc" ]] && cp "$VIM_CONFIG_DIR/.vimrc" "$HOME"
+}
+
 function setupZSH() {
     echo -e "${grayColour} Installing and configuring zsh terminal with powerlevel10k theme${endColour}"
     local ZSH_CONFIG_DIR="$HOME/.config/zsh"
@@ -115,6 +123,7 @@ function setupTerminalUtils() {
 setupCustomTerminalFont
 setupAndConfigureKitty
 setupTerminalUtils
+setupVim
 setupBlackArchRepository
 setupFirejail
 setupNVM
