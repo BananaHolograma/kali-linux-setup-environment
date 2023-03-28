@@ -68,7 +68,7 @@ function prepareEnvironmentForTheInstallation() {
     echo -e "${grayColour}[ PREPARATION ]$endColour$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
    
     pacman -Syu
-    pacman -S base-devel git curl
+    pacman -S base-devel git curl vim
 }
 
 function setupCustomTerminalFont() {
@@ -164,9 +164,9 @@ function setupFirejail() {
 }
 
 function setupTerminalUtils() {
-    echo -e "${grayColour}[ TERMINAL UTILS ]$endColour Installing and configuring terminal utils (bat, lsd ,fzf)...$endColour"
+    echo -e "${grayColour}[ TERMINAL UTILS ]$endColour Installing and configuring terminal utils...$endColour"
     
-    pacman -S bat fzf lsd \
+    pacman -S bat fzf lsd man-db man-pages bash-completion \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
 }
 
