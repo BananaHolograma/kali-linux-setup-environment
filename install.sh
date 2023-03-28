@@ -203,4 +203,4 @@ setupZSH
 setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
-cp "$HOME_DIR/.config" "$ROOT_DIR"
+cp -p "$HOME_DIR/.config" "$ROOT_DIR" "$HOME_DIR/.zshrc" "$ROOT_DIR" "$HOME_DIR/.fonts" "$ROOT_DIR" "$HOME_DIR/.vimrc" "$ROOT_DIR"
