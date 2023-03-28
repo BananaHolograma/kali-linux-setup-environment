@@ -55,7 +55,7 @@ ROOT_DIR="$HOME"
 
 # Common folders to work
 target_home_config_dir="$HOME_DIR/.config"
-config_backup_folder=$target_home_config_dir/backup/${USER}.config
+config_backup_folder="$HOME_DIR/backup/${SELECTED_USER}.config"
 
 function prepareEnvironmentForTheInstallation() {
     if [ -d "$target_home_config_dir" ]; then
@@ -68,7 +68,7 @@ function prepareEnvironmentForTheInstallation() {
     echo -e "${grayColour}[ PREPARATION ]$endColour$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
    
     pacman -Syu
-    pacman -S base-devel git curl sudo
+    pacman -S base-devel git curl
 }
 
 function setupCustomTerminalFont() {
@@ -136,6 +136,7 @@ function setupZSH() {
 
 function setupNVM() {
     echo -e "${grayColour}[ NVM ]$endColour$yellowColour Installing NVM (Node Version Manager) and set as default the LTS version$endColour"
+
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 
     nvm install --lts \
@@ -144,22 +145,22 @@ function setupNVM() {
 
 function setupBlackArchRepository() {
     echo -e "${grayColour}[ BLACKARCH ]$endColour Adding blackarch repository to make security packages available in the system$endColour"
-    curl -o- https://blackarch.org/strap.sh | bash
+    
+    curl -sO https://blackarch.org/strap.sh
+
+    if [ "$(echo "5ea40d49ecd14c2e024deecf90605426db97ea0c" strap.sh | sha1sum -c)" ]; then 
+        chmod +x ./strap.sh && bash strap.sh
+        pacman -Syu
+        pacman -S ffuz sqlmap smbmap smbrelay sublist3r nmap dnsrecon wireshark-cli john hashcat crackmapexec set metasploit
+    else 
+        echo -e "${redColour}[ ERROR ]$endColour Checksum for$yellowColour strap.sh$endColour is not valid, the installation file has been altered"
+    fi
 }
 
 function setupFirejail() {
     echo -e "${grayColour}[ FIREJAIL ]$endColour Installing firejail and downloading stable version of firefox$endColour"
-    pacman-Sy firejail 
 
-    # We installed yay to get access firefox binaries
-    git clone https://aur.archlinux.org/yay-git.git
-
-    cd yay-git && makepkg -sri
-
-    # firefox: Stable regular build
-    # firefox-beta: Stable pre-release build
-    # firefox-nightly: Unstable and testing build
-    $ yay -S firefox
+    pacman -Sy firejail firefox
 }
 
 function setupTerminalUtils() {
@@ -167,8 +168,6 @@ function setupTerminalUtils() {
     
     pacman -S bat fzf lsd \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
-
-    source "$HOME_DIR/.zshrc"
 }
 
 function localeGeneration() {
@@ -200,8 +199,8 @@ setupAndConfigureKitty
 setupTerminalUtils
 setupVim
 setupFirejail
-setupNVM
 setupZSH
+setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
 cp "$HOME_DIR/.config" "$ROOT_DIR"
