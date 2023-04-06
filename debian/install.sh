@@ -126,11 +126,11 @@ function setupZSH() {
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$ZSH_CONFIG_DIR/.zsh_history"
 
-    git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh_autosuggestions_repository
-    rm -rf zsh_autosuggestions_repository/.git && mv zsh_autosuggestions_repository "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions"
+    git clone https://github.com/zsh-users/zsh-autosuggestions.git .
+    rm -rf zsh-autosuggestions/.git && mv zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins/"
 
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting_repository 
-    rm -rf zsh_autosuggestions_repository/.git && mv zsh_autosuggestions_repository "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions"
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git .
+    rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
 
     cp "$CURRENT_DIR/../config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
 
