@@ -126,9 +126,17 @@ function setupZSH() {
     mkdir -p "$ZSH_CONFIG_DIR/plugins"
     touch "$ZSH_CONFIG_DIR/.zsh_history"
 
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins"
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git  "$ZSH_CONFIG_DIR/plugins"
+    git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
+    rm -rf zsh-autosuggestions/.git && mv zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins/"
+
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
+    rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
+
     cp "$CURRENT_DIR/../config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
+
+    cat "$CURRENT_DIR/../config/zsh/.zshrc" >> "$ZSH_CONFIG_DIR/.zshrc" 
+
+    source "$HOME_DIR/.zshrc"
 
     chsh -s "$(which zsh)" # Change default shell for the actual user
     zsh
@@ -138,6 +146,8 @@ function setupNVM() {
     echo -e "${grayColour}[ NVM ]$endColour$yellowColour Installing NVM (Node Version Manager) and set as default the LTS version$endColour"
 
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+    source "$HOME_DIR/.zshrc"
 
     nvm install --lts \
         && nvm use --lts

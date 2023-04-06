@@ -134,6 +134,8 @@ function setupZSH() {
 
     cp "$CURRENT_DIR/../config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
 
+    cat "$CURRENT_DIR/../config/zsh/.zshrc" >> "$ZSH_CONFIG_DIR/.zshrc" 
+
     chsh -s "$(which zsh)" # Change default shell for the actual user
     zsh
 }
@@ -143,6 +145,8 @@ function setupNVM() {
 
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 
+    source "$HOME_DIR/.zshrc"
+    
     nvm install --lts \
         && nvm use --lts
 }
