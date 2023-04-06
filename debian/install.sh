@@ -126,10 +126,10 @@ function setupZSH() {
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$ZSH_CONFIG_DIR/.zsh_history"
 
-    git clone https://github.com/zsh-users/zsh-autosuggestions.git .
+    git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
     rm -rf zsh-autosuggestions/.git && mv zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins/"
 
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git .
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
     rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
 
     cp "$CURRENT_DIR/../config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
@@ -179,3 +179,4 @@ setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
 cp -p "$HOME_DIR/.config" "$ROOT_DIR" "$HOME_DIR/.zshrc" "$ROOT_DIR" "$HOME_DIR/.fonts" "$ROOT_DIR" "$HOME_DIR/.vimrc" "$ROOT_DIR"
+chown -R "$SELECTED_USER":"$SELECTED_USER" target_home_config_dir
