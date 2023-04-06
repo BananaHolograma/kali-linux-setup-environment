@@ -100,7 +100,7 @@ function setupVim() {
     echo -e "${grayColour}[ VIM ]$endColour Installing and configuring VIM editor with basic initial configuration"
     local VIM_CONFIG_DIR="$CURRENT_DIR/../config/vim/"
     
-    apt install vi vim
+    apt install vim
 
     if [ -f "$HOME_DIR"/.vimrc ]; then
         echo -e "${grayColour}[ VIM ]$endColour$yellowColour Detected existing .vimrc file, creating backup on$endColour$cyanColour $config_backup_folder"
@@ -123,11 +123,15 @@ function setupZSH() {
 
     apt install zsh
 
-    mkdir -p "$ZSH_CONFIG_DIR/plugins"
+    mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$ZSH_CONFIG_DIR/.zsh_history"
 
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins"
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git  "$ZSH_CONFIG_DIR/plugins"
+    git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh_autosuggestions_repository
+    rm -rf zsh_autosuggestions_repository/.git && mv zsh_autosuggestions_repository "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions"
+
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting_repository 
+    rm -rf zsh_autosuggestions_repository/.git && mv zsh_autosuggestions_repository "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions"
+
     cp "$CURRENT_DIR/../config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
 
     chsh -s "$(which zsh)" # Change default shell for the actual user
@@ -150,13 +154,13 @@ function setupInfoSecTools() {
 function setupFirejail() {
     echo -e "${grayColour}[ FIREJAIL ]$endColour Installing firejail and downloading stable version of firefox$endColour"
 
-    apt install firejail firefox
+    apt install firejail
 }
 
 function setupTerminalUtils() {
     echo -e "${grayColour}[ TERMINAL UTILS ]$endColour Installing and configuring terminal utils...$endColour"
     
-    apt install bat fzf lsd man-db man-pages bash-completion \
+    apt install bat fzf lsd bash-completion \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
 }
 
