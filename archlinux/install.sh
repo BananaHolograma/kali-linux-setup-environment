@@ -75,15 +75,20 @@ function setupCustomTerminalFont() {
     echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Downloading HackNerdFont from$endColour$yellowColour https://github.com/ryanoasis/nerd-fonts$endColour"
 
     local fonts_dir="$HOME_DIR/.fonts"
-    mkdir -p "$fonts_dir"
-     
-    if curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip; then 
-        unzip -oq Hack.zip -d "$fonts_dir" && rm Hack.zip
-    else 
-        cp "$CURRENT_DIR/../config/fonts/HackNerdFont/*" "$fonts_dir"
-    fi 
 
-    echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Fonts installed and configured in$endColour$yellowColour $fonts_dir $endColour"
+    if [ -d "$fonts_dir/HackNerdFont" ]; then
+        echo -e "${grayColour}[ FONTS ] HackNerdFont font is already installed in the system, skipping...${endColour}"
+    else
+        mkdir -p "$fonts_dir"
+        
+        if curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip; then 
+            unzip -oq Hack.zip -d "$fonts_dir" && rm Hack.zip
+        else 
+            cp "$CURRENT_DIR/../config/fonts/HackNerdFont/*" "$fonts_dir"
+        fi
+        
+        echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Fonts installed and configured in$endColour$yellowColour $fonts_dir $endColour"
+    fi
 }
 
 

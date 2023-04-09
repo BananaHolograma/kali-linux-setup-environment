@@ -68,24 +68,28 @@ function prepareEnvironmentForTheInstallation() {
     echo -e "${grayColour}[ PREPARATION ]$endColour$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
    
     apt update && apt upgrade -y
-    apt install git curl vim
+    apt install git curl vim net-utils 
 }
 
 function setupCustomTerminalFont() {
     echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Downloading HackNerdFont from$endColour$yellowColour https://github.com/ryanoasis/nerd-fonts$endColour"
 
     local fonts_dir="$HOME_DIR/.fonts"
-    mkdir -p "$fonts_dir"
-     
-    if curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip; then 
-        unzip -oq Hack.zip -d "$fonts_dir" && rm Hack.zip
-    else 
-        cp "$CURRENT_DIR/../config/fonts/HackNerdFont/*" "$fonts_dir"
-    fi 
 
-    echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Fonts installed and configured in$endColour$yellowColour $fonts_dir $endColour"
+    if [ -d "$fonts_dir/HackNerdFont" ]; then
+        echo -e "${grayColour}[ FONTS ] HackNerdFont font is already installed in the system, skipping...${endColour}"
+    else
+        mkdir -p "$fonts_dir"
+        
+        if curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip; then 
+            unzip -oq Hack.zip -d "$fonts_dir" && rm Hack.zip
+        else 
+            cp "$CURRENT_DIR/../config/fonts/HackNerdFont/*" "$fonts_dir"
+        fi
+
+        echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Fonts installed and configured in$endColour$yellowColour $fonts_dir $endColour"
+    fi
 }
-
 
 function setupAndConfigureKitty() {
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Installing and configuring kitty GPU based terminal...$endColour"
@@ -152,11 +156,32 @@ function setupNVM() {
 }
 
 function setupInfoSecTools() {
-    apt install tor amass subfinder sublist3r
+    apt install pip3 python3 tor amass subfinder sublist3r sqlmap dnsrecon wafw00f whois masscan nmap brutespray ffuf
+
+    if [ "$(command -v snap)" ]; then
+        snap install seclists searchsploit
+        snap install go --classic
+
+        if [ "$(command -v go)" ]; then 
+            go install github.com/hakluke/hakrawler@latest \
+                && ln -s ~/go/bin/hakrawler /usr/local/bin/hakrawler
+
+            go install github.com/lc/gau/v2/cmd/gau@latest
+        fi
+    fi
+
+     git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
+        && python3 xnLinkFinder/setup.py install \
+        && ln -s xnLinkFinder/xnLinkFinder.py /usr/local/bin/xnLinkFinder
+
+         git clone https://github.com/xnl-h4ck3r/waymore.git \
+            && python3 setup.py install \
+            && ln -s waymore/waymore.py /usr/local/bin/waymore
+
 }
 
 function setupFirejail() {
-    echo -e "${grayColour}[ FIREJAIL ]$endColour Installing firejail and downloading stable version of firefox$endColour"
+    echo -e "${grayColour}[ FIREJAIL ]$endColour Installing firejail$endColour"
 
     apt install firejail
 }
