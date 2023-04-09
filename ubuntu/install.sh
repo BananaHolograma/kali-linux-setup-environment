@@ -68,7 +68,7 @@ function prepareEnvironmentForTheInstallation() {
     echo -e "${grayColour}[ PREPARATION ]$endColour$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
    
     apt update && apt upgrade -y
-    apt install git curl vim net-tools 
+    apt install git curl wget vim net-tools tldr
 }
 
 function setupCustomTerminalFont() {
@@ -156,15 +156,20 @@ function setupNVM() {
 }
 
 function setupInfoSecTools() {
-    apt install python3 python3-pip tor subfinder sublist3r sqlmap dnsrecon wafw00f whois masscan nmap brutespray ffuf
+    apt install python3 python3-pip tor sqlmap dnsrecon wafw00f whois masscan nmap brutespray ffuf
+      
+      wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
+        && mkdir -p "/usr/share/seclists" \
+        && unzip -oq SecList.zip -d "/usr/share/seclists" \
+        && rm -f SecList.zip
 
     if [ "$(command -v snap)" ]; then
-        snap install seclists searchsploit amass
+        snap install searchsploit amass
         snap install go --classic
 
         if [ "$(command -v go)" ]; then 
             go install github.com/hakluke/hakrawler@latest \
-                && ln -s ~/go/bin/hakrawler /usr/local/bin/hakrawler
+                && ln -sf ~/go/bin/hakrawler /usr/local/bin/hakrawler
 
             go install github.com/lc/gau/v2/cmd/gau@latest
             go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
@@ -173,11 +178,11 @@ function setupInfoSecTools() {
 
      git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
         && python3 xnLinkFinder/setup.py install \
-        && ln -s xnLinkFinder/xnLinkFinder.py /usr/local/bin/xnLinkFinder
+        && ln -sf xnLinkFinder/xnLinkFinder.py /usr/local/bin/xnLinkFinder
 
-         git clone https://github.com/xnl-h4ck3r/waymore.git \
-            && python3 setup.py install \
-            && ln -s waymore/waymore.py /usr/local/bin/waymore
+    git clone https://github.com/xnl-h4ck3r/waymore.git \
+        && python3 setup.py install \
+        && ln -sf waymore/waymore.py /usr/local/bin/waymore
 
 }
 
