@@ -160,11 +160,14 @@ function setupInfoSecTools() {
       
       wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
         && mkdir -p "/usr/share/seclists" \
-        && unzip -oq SecList.zip -d "/usr/share/seclists" \
+        && unzip -oq SecList.zip -d "/usr/share/" \
+        && mv /usr/share/SecLists-master /usr/share/seclists \
         && rm -f SecList.zip
 
     if [ "$(command -v snap)" ]; then
-        snap install searchsploit amass
+        # Need to run individually, gives me errors all at once
+        snap install searchsploit 
+        snap install amass
         snap install go --classic
 
         if [ "$(command -v go)" ]; then 
