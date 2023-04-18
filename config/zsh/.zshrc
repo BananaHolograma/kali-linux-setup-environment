@@ -162,8 +162,11 @@ runEnumeration() {
         echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on root domain $domain${reset}\n"
         gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 25 --o "$BASE_DIR"/urls.txt "$domain" 
 
-        echo -e "${green}[+]$reset ${yellow} Running httpx tool on gathered urls from root domain $domain${reset}\n"
-        httpx -sc -ip -fr -list $(grep -Ei "$regex_domain" "$BASE_DIR/urls.txt") -o "$BASE_DIR/http_probe"
+
+        if [[ -f "$BASE_DIR/urls.txt" ]]; then 
+            echo -e "${green}[+]$reset ${yellow} Running httpx tool on gathered urls from root domain $domain${reset}\n"
+            grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | httpx -sc -ip -fr -o "$BASE_DIR/http_probe"
+        fi
 
         echo -e "${green}[+]$reset ${yellow}Looking for .js files on root domain $domain${reset}\n"
         getjs --insecure --complete --url "https://$domain" --output "$BASE_DIR"/js_files.txt
@@ -182,7 +185,7 @@ runEnumeration() {
 
             if [[ -f "$SUBDOMAIN_BASE_DIR/urls.txt" ]]; then 
                 echo -e "${green}[+]$reset ${yellow} Running httpx tool on gathered urls from subdomain $domain${reset}\n"
-                httpx -sc -ip -fr -list $(grep -Ei "$regex_domain" "$SUBDOMAIN_BASE_DIR/urls.txt") -o "$SUBDOMAIN_BASE_DIR/http_probe"
+                grep -Ei "$regex_domain" "$SUBDOMAIN_BASE_DIR/urls.txt" | httpx -sc -ip -fr -o "$SUBDOMAIN_BASE_DIR/http_probe"
             fi
 
         done < "$BASE_DIR/all_subdomains.txt"
