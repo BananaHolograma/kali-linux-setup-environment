@@ -31,7 +31,6 @@ SELECTED_USER=''
 SUDO_PASSWORD=''
 create_non_existing_user='n'
 
-
 while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; do 
 
     read -rp "Choose a user to apply the configuration: " SELECTED_USER
@@ -70,9 +69,11 @@ function prepareEnvironmentForTheInstallation() {
     fi
 
     echo -e "${grayColour}[ PREPARATION ]$endColour$yellowColour Installing packages that are needed in the system to continue the process...$endColour"
-   
-    apt update && apt upgrade -y
-    apt install git curl wget vim net-tools tldr
+    
+    # We only need to provide the sudo password one time at the start of the script
+    echo "$SUDO_PASSWORD" | sudo -S apt update
+
+    sudo apt upgrade -y && sudo apt install git curl wget vim net-tools tldr
 }
 
 function setupCustomTerminalFont() {
@@ -98,7 +99,7 @@ function setupCustomTerminalFont() {
 function setupAndConfigureKitty() {
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Installing and configuring kitty GPU based terminal...$endColour"
 
-    apt install kitty \
+    sudo apt install kitty \
         && cp -r "$CURRENT_DIR/../config/kitty" "$target_home_config_dir"
 
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Kitty GPU based terminal installed and configured on$endColour$cyanColour [ $(which kitty) ]$endColour"
@@ -108,7 +109,7 @@ function setupVim() {
     echo -e "${grayColour}[ VIM ]$endColour Installing and configuring VIM editor with basic initial configuration"
     local VIM_CONFIG_DIR="$CURRENT_DIR/../config/vim/"
     
-    apt install vim
+    sudo apt install vim
 
     if [ -f "$HOME_DIR"/.vimrc ]; then
         echo -e "${grayColour}[ VIM ]$endColour$yellowColour Detected existing .vimrc file, creating backup on$endColour$cyanColour $config_backup_folder"
@@ -129,7 +130,7 @@ function setupZSH() {
         cp "$HOME_DIR"/.zshrc "$config_backup_folder"
     fi
 
-    echo "$SUDO_PASSWORD" | sudo -S apt install zsh
+    sudo apt install zsh
 
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$ZSH_CONFIG_DIR/.zsh_history"
@@ -159,8 +160,8 @@ function setupNVM() {
 }
 
 function setupInfoSecTools() {
-    echo "$SUDO_PASSWORD" | sudo -S apt remove python3-httpx 
-    echo "$SUDO_PASSWORD" | sudo -S apt install firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb spice-vdagent spice-webagent
+    sudo apt remove python3-httpx 
+    sudo apt install firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb spice-vdagent spice-webagent
 
     wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
         && unzip -oq SecList.zip -d "/usr/share/" \
@@ -168,14 +169,14 @@ function setupInfoSecTools() {
         && rm -f SecList.zip
 
     if [[ ! -f "/usr/share/wordlists/rockyou.txt" ]]; then
-        echo "$SUDO_PASSWORD" | sudo -S gunzip /usr/share/wordlists/rockyou.txt.gz
+        sudo gunzip /usr/share/wordlists/rockyou.txt.gz
     fi 
 
     wget --output-document crt https://raw.githubusercontent.com/s3r0s4pi3ns/crt/main/crt.sh \
-        && chmod +x crt && echo "$SUDO_PASSWORD" | sudo -S mv crt /usr/local/bin/
+        && chmod +x crt && sudo mv crt /usr/local/bin/
    
     wget --output-document randomipzer https://raw.githubusercontent.com/s3r0s4pi3ns/randomipzer/main/randomipzer.sh \
-        && chmod +x randomipzer && echo "$SUDO_PASSWORD" | sudo -S mv randomipzer /usr/local/bin/
+        && chmod +x randomipzer && sudo mv randomipzer /usr/local/bin/
 
     # GO binary path is exported on .zshrc
     if command_exists 'go'; then 
@@ -198,7 +199,7 @@ function setupInfoSecTools() {
 function setupTerminalUtils() {
     echo -e "${grayColour}[ TERMINAL UTILS ]$endColour Installing and configuring terminal utils...$endColour"
     
-    apt install bat fzf lsd bash-completion \
+    sudo apt install bat fzf lsd bash-completion \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
 }
 
