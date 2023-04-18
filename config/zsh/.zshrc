@@ -151,7 +151,10 @@ runEnumeration() {
        
         # Make grepable the TLD termination like .com, .es .org, etc
         regex_domain=$(echo $domain | sed s/\./\\./)
-        all_subdomains=$(cat "$BASE_DIR/*.txt" | sort -u | grep -Ev "^(2a\.|\*\.)?$regex_domain$" | tee "$BASE_DIR/all_subdomains.txt")
+
+        find "$BASE_DIR" -type f -name '*.txt' -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
+        sort -u "$BASE_DIR/all_subdomains.txt" > .tmp && mv .tmp all_subdomains.txt
+        
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
 
         echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}\n"
