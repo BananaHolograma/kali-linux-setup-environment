@@ -121,7 +121,7 @@ function setupVim() {
 }
 
 function setupZSH() {
-    echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Installing and configuring zsh configuration$endColour"
+    echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Installing and configuring zsh$endColour"
     local ZSH_CONFIG_DIR="$HOME_DIR/.config/zsh"
 
     if [ -f "$HOME_DIR"/.zshrc ]; then
@@ -129,10 +129,12 @@ function setupZSH() {
         cp "$HOME_DIR"/.zshrc "$config_backup_folder"
     fi
 
-    apt install zsh
+    echo "$SUDO_PASSWORD" | sudo -S apt install zsh
 
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$ZSH_CONFIG_DIR/.zsh_history"
+
+    cat "$CURRENT_DIR/../config/zsh/.zshrc" >> "$ZSH_CONFIG_DIR/.zshrc" 
 
     git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
     rm -rf zsh-autosuggestions/.git && mv zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins/"
@@ -141,8 +143,6 @@ function setupZSH() {
     rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
 
     cp "$CURRENT_DIR/../config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
-
-    cat "$CURRENT_DIR/../config/zsh/.zshrc" >> "$ZSH_CONFIG_DIR/.zshrc" 
 
     chsh -s "$(which zsh)" # Change default shell for the actual user
     zsh
@@ -155,8 +155,7 @@ function setupNVM() {
 
     source "$HOME_DIR/.zshrc"
     
-    nvm install --lts \
-        && nvm use --lts
+    nvm install --lts && nvm use --lts
 }
 
 function setupInfoSecTools() {
