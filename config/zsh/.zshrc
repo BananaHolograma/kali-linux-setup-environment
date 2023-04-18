@@ -153,7 +153,7 @@ runEnumeration() {
         regex_domain=$(echo $domain | sed 's/\./\\./g')
 
         find "$BASE_DIR" -type f -name '*.txt' -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
-        sort -u "$BASE_DIR/all_subdomains.txt" > .tmp && mv .tmp all_subdomains.txt
+        sort -u "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" > .tmp && mv .tmp all_subdomains.txt
 
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
 
@@ -185,7 +185,7 @@ runEnumeration() {
                 httpx -sc -ip -fr -list $(grep -Ei "$regex_domain" "$SUBDOMAIN_BASE_DIR/urls.txt") -o "$SUBDOMAIN_BASE_DIR/http_probe"
             fi
 
-        done <<< "$all_subdomains"
+        done < "$BASE_DIR/all_subdomains.txt"
 
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
