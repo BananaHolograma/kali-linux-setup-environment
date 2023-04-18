@@ -78,7 +78,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update
 
-    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools tldr docker.io docker-compose rsync
+    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools iputils-ping tldr docker.io docker-compose rsync
 }
 
 function setupCustomTerminalFont() {
@@ -159,13 +159,17 @@ function setupZSH() {
 }
 
 function setupNVM() {
-    echo -e "${grayColour}[ NVM ]$endColour$yellowColour Installing NVM (Node Version Manager) and set as default the LTS version$endColour"
+    if command_exists 'nvm'; then 
+        echo -e "${grayColour}[ NVM ]$endColour$yellowColour NVM (Node Version Manager) is already installed, skipping...$endColour"
+    else 
+        echo -e "${grayColour}[ NVM ]$endColour$yellowColour Installing NVM (Node Version Manager) and set as default the LTS version$endColour"
 
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-    
-    source "$HOME_DIR/.zshrc"
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+        
+        source "$HOME_DIR/.zshrc"
 
-    nvm install --lts && nvm use --lts
+        nvm install --lts && nvm use --lts
+    fi
 }
 
 function setupInfoSecTools() {
@@ -202,9 +206,12 @@ function setupInfoSecTools() {
         ! command_exists 'getjs' && go install github.com/003random/getJS@latest
         
         if ! command_exists 'puredns' && command_exists 'massdns'; then 
-            go install github.com/d3mondev/puredns/v2@latest \
-                && wget -c -nc https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
-                && unzip main.zip && mv resolvers-main dns-resolvers && rm main.zip
+            go install github.com/d3mondev/puredns/v2@latest
+
+            if [[ ! -d "$HOME_DIR/dns-resolvers"]]; then 
+                wget -c -nc https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
+                    && unzip main.zip && mv resolvers-main "$HOME_DIR/dns-resolvers" && rm main.zip
+            fi
         fi 
 
     fi
