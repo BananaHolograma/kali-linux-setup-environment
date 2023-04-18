@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 set -eou pipefail
 
@@ -149,6 +149,8 @@ function setupZSH() {
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
         rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
     fi
+
+    source "$HOME_DIR/.zshrc"
 }
 
 function setupNVM() {
@@ -156,6 +158,8 @@ function setupNVM() {
 
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
     
+    source "$HOME_DIR/.zshrc"
+
     nvm install --lts && nvm use --lts
 }
 
@@ -163,7 +167,7 @@ function setupInfoSecTools() {
     sudo apt remove python3-httpx && sudo apt autoremove --purge
     sudo apt install -y firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
 
-    wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
+    wget -c -nc --quiet https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
         && sudo unzip -oq SecList.zip -d "/usr/share/" \
         && sudo mv /usr/share/SecLists-master /usr/share/seclists \
         && sudo rm -f SecList.zip
@@ -173,10 +177,10 @@ function setupInfoSecTools() {
         sudo gunzip /usr/share/wordlists/rockyou.txt.gz
     fi 
 
-    wget --output-document crt https://raw.githubusercontent.com/s3r0s4pi3ns/crt/main/crt.sh \
+    wget --output-document --quiet crt https://raw.githubusercontent.com/s3r0s4pi3ns/crt/main/crt.sh \
         && chmod +x crt && sudo mv crt /usr/local/bin/
    
-    wget --output-document randomipzer https://raw.githubusercontent.com/s3r0s4pi3ns/randomipzer/main/randomipzer.sh \
+    wget --output-document --quiet randomipzer https://raw.githubusercontent.com/s3r0s4pi3ns/randomipzer/main/randomipzer.sh \
         && chmod +x randomipzer && sudo mv randomipzer /usr/local/bin/
 
     # GO binary path is exported on .zshrc
@@ -192,7 +196,7 @@ function setupInfoSecTools() {
         
         if ! command_exists 'puredns' && command_exists 'massdns'; then 
             go install github.com/d3mondev/puredns/v2@latest \
-                && wget https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
+                && wget -c -nc --quiet https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
                 && unzip main.zip && mv resolvers-main dns-resolvers && rm main.zip
         fi 
 
