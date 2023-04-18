@@ -150,15 +150,12 @@ runEnumeration() {
         subfinder -d $domain --silent -nW -o "$BASE_DIR/subfinder_subdomains.txt"
        
         # Make grepable the TLD termination like .com, .es .org, etc
-        regex_domain=$(sed s/\./\\./ $domain)
+        regex_domain=$(echo $domain | sed s/\./\\./)
         all_subdomains=$(cat "$BASE_DIR/*.txt" | sort -u | grep -Ev "^(2a\.|\*\.)?$regex_domain$" | tee "$BASE_DIR/all_subdomains.txt")
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
 
         echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}\n"
         
-        echo -e "${green}[+]$reset ${yellow}Creating folders for each subdomain found${reset}\n"
-        echo -e "$all_subdomains" | xargs -P10 -I {} mkdir -p "$BASE_DIR"/{}
-
         echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on root domain $domain${reset}\n"
         gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 25 --o "$BASE_DIR"/urls.txt "$domain" 
 
@@ -170,6 +167,8 @@ runEnumeration() {
 
         while IFS= read -r subdomain; do
             local SUBDOMAIN_BASE_DIR="$BASE_DIR/$subdomain"
+
+            echo -e "${green}[+]$reset ${yellow}Creating folder for subdomain $subdomain${reset}\n"
             mkdir -p "$SUBDOMAIN_BASE_DIR"
 
             echo -e "${green}[+]$reset ${yellow}Looking for .js files on $subdomain${reset}\n"
