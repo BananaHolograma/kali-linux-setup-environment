@@ -15,23 +15,22 @@ endColour='\033[0m'
 
 CURRENT_DIR=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
 
-function is_root() {
-     [[ "$(id -u)" -eq 0 ]]
-}
-
 function user_exists() {
     local username=$1
 
     id -u "$username" &>/dev/null
 }
 
+function command_exists() {
+    local command=$1
+
+    [[ -n "$(command -v "$command")" ]]
+}
+
 SELECTED_USER=''
+SUDO_PASSWORD=''
 create_non_existing_user='n'
 
-if ! is_root; then 
-    echo -e "${yellowColour}[ WARNING ]$endColour$grayColour Run this script with sudo privileges$endColour"
-    exit 1
-fi 
 
 while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; do 
 
@@ -47,6 +46,11 @@ while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; d
             passwd "$SELECTED_USER"
         fi
     fi
+
+
+    while [[ -z $SUDO_PASSWORD ]]; do 
+         read -rp "Write the sudo password for your user $SELECTED_USER to install packages with privileges: " SUDO_PASSWORD
+    done 
 done
 
 HOME_DIR="/home/$SELECTED_USER"
@@ -117,7 +121,7 @@ function setupVim() {
 }
 
 function setupZSH() {
-    echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Installing and configuring zsh terminal with powerlevel10k theme$endColour"
+    echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Installing and configuring zsh configuration$endColour"
     local ZSH_CONFIG_DIR="$HOME_DIR/.config/zsh"
 
     if [ -f "$HOME_DIR"/.zshrc ]; then
@@ -156,43 +160,40 @@ function setupNVM() {
 }
 
 function setupInfoSecTools() {
-    apt install python3 python3-pip tor sqlmap dnsrecon wafw00f whois masscan nmap brutespray ffuf
-      
-      wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
-        && mkdir -p "/usr/share/seclists" \
+    echo "$SUDO_PASSWORD" | sudo -S apt remove python3-httpx 
+    echo "$SUDO_PASSWORD" | sudo -S apt install firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
+
+    wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
         && unzip -oq SecList.zip -d "/usr/share/" \
         && mv /usr/share/SecLists-master /usr/share/seclists \
         && rm -f SecList.zip
 
-    if [ "$(command -v snap)" ]; then
-        # Need to run individually, gives me errors all at once
-        snap install searchsploit 
-        snap install amass
-        snap install go --classic
+    if [[ ! -f "/usr/share/wordlists/rockyou.txt" ]]; then
+        echo "$SUDO_PASSWORD" | sudo -S gunzip /usr/share/wordlists/rockyou.txt.gz
+    fi 
 
-        if [ "$(command -v go)" ]; then 
-            go install github.com/hakluke/hakrawler@latest \
-                && ln -sf ~/go/bin/hakrawler /usr/local/bin/hakrawler
+    wget --output-document crt https://raw.githubusercontent.com/s3r0s4pi3ns/crt/main/crt.sh \
+        && chmod +x crt && echo "$SUDO_PASSWORD" | sudo -S mv crt /usr/local/bin/
+   
+    wget --output-document randomipzer https://raw.githubusercontent.com/s3r0s4pi3ns/randomipzer/main/randomipzer.sh \
+        && chmod +x randomipzer && echo "$SUDO_PASSWORD" | sudo -S mv randomipzer /usr/local/bin/
 
-            go install github.com/lc/gau/v2/cmd/gau@latest
-            go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-        fi
+    # GO binary path is exported on .zshrc
+    if command_exists 'go'; then 
+        ! command_exists 'hakrawler' && go install github.com/hakluke/hakrawler@latest 
+        ! command_exists 'gau' && go install github.com/lc/gau/v2/cmd/gau@latest
+        ! command_exists 'subfinder' && go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+        ! command_exists 'httpx' && exit 1 && go install github.com/projectdiscovery/httpx/cmd/httpx@latest
+        ! command_exists 'gotator' &&  go install github.com/Josue87/gotator@latest
+        ! command_exists 'getjs' && go install github.com/003random/getJS@latest
+        
+        if ! command_exists 'puredns' && command_exists 'massdns'; then 
+            go install github.com/d3mondev/puredns/v2@latest \
+                && wget https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
+                && unzip main.zip && mv resolvers-main dns-resolvers && rm main.zip
+        fi 
+
     fi
-
-     git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git \
-        && python3 xnLinkFinder/setup.py install \
-        && ln -sf xnLinkFinder/xnLinkFinder.py /usr/local/bin/xnLinkFinder
-
-    git clone https://github.com/xnl-h4ck3r/waymore.git \
-        && python3 setup.py install \
-        && ln -sf waymore/waymore.py /usr/local/bin/waymore
-
-}
-
-function setupFirejail() {
-    echo -e "${grayColour}[ FIREJAIL ]$endColour Installing firejail$endColour"
-
-    apt install firejail
 }
 
 function setupTerminalUtils() {
@@ -206,14 +207,13 @@ function setupTerminalUtils() {
 # START THE INSTALLATION AND CONFIGURATION PROCESS FOR THE NEW ENVIRONMENT
 ###
 prepareEnvironmentForTheInstallation
-setupInfoSecTools
 setupCustomTerminalFont
 setupAndConfigureKitty
 setupTerminalUtils
 setupVim
-setupFirejail
 setupZSH
 setupNVM
+setupInfoSecTools
 
 # Copy the entire configuration to root home folder in order to have same configuration
 cp -p "$HOME_DIR/.config" "$ROOT_DIR" "$HOME_DIR/.zshrc" "$ROOT_DIR" "$HOME_DIR/.fonts" "$ROOT_DIR" "$HOME_DIR/.vimrc" "$ROOT_DIR"
