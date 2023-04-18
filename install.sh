@@ -80,7 +80,7 @@ function setupCustomTerminalFont() {
     local fonts_dir="$HOME_DIR/.fonts"
 
     if [[ -f "$fonts_dir"/Hack\ Regular\ Nerd\ Font\ Complete.ttf ]]; then
-        echo -e "${grayColour}[ FONTS ] HackNerdFont font is already installed in the system, skipping...${endColour}"
+        echo -e "${grayColour}[ FONTS ]$endColour$yellowColour HackNerdFont font is already installed in the system, skipping...${endColour}"
     else
         echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Downloading HackNerdFont from$endColour$yellowColour https://github.com/ryanoasis/nerd-fonts$endColour"
 
@@ -212,8 +212,8 @@ setupAndConfigureKitty
 setupTerminalUtils
 setupVim
 setupZSH
-setupNVM
 setupInfoSecTools
+setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
 cp -p "$HOME_DIR/.config" "$ROOT_DIR" "$HOME_DIR/.zshrc" "$ROOT_DIR" "$HOME_DIR/.fonts" "$ROOT_DIR" "$HOME_DIR/.vimrc" "$ROOT_DIR"
