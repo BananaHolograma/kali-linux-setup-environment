@@ -164,11 +164,12 @@ function setupInfoSecTools() {
     sudo apt install -y firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
 
     wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
-        && unzip -oq SecList.zip -d "/usr/share/" \
-        && mv /usr/share/SecLists-master /usr/share/seclists \
-        && rm -f SecList.zip
+        && sudo unzip -oq SecList.zip -d "/usr/share/" \
+        && sudo mv /usr/share/SecLists-master /usr/share/seclists \
+        && sudo rm -f SecList.zip
 
     if [[ ! -f "/usr/share/wordlists/rockyou.txt" ]]; then
+        echo -e "${grayColour}[ WORDLISTS ]$endColour$yellowColour Extracting rockyou.txt.gz ... $endColour"
         sudo gunzip /usr/share/wordlists/rockyou.txt.gz
     fi 
 
@@ -180,10 +181,12 @@ function setupInfoSecTools() {
 
     # GO binary path is exported on .zshrc
     if command_exists 'go'; then 
+        echo -e "${cyanColour}[ GOLANG ]$endColour$yellowColour Installing golang security tools ... $endColour"
+
         ! command_exists 'hakrawler' && go install github.com/hakluke/hakrawler@latest 
         ! command_exists 'gau' && go install github.com/lc/gau/v2/cmd/gau@latest
         ! command_exists 'subfinder' && go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-        ! command_exists 'httpx' && exit 1 && go install github.com/projectdiscovery/httpx/cmd/httpx@latest
+        ! command_exists 'httpx' && go install github.com/projectdiscovery/httpx/cmd/httpx@latest
         ! command_exists 'gotator' && go install github.com/Josue87/gotator@latest
         ! command_exists 'getjs' && go install github.com/003random/getJS@latest
         
@@ -209,9 +212,9 @@ function setupTerminalUtils() {
 prepareEnvironmentForTheInstallation
 setupCustomTerminalFont
 setupAndConfigureKitty
-setupTerminalUtils
 setupVim
 setupZSH
+setupTerminalUtils
 setupInfoSecTools
 setupNVM
 
