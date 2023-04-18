@@ -89,7 +89,7 @@ function setupCustomTerminalFont() {
         if curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip; then 
             unzip -oq Hack.zip -d "$fonts_dir" && rm Hack.zip
         else 
-            cp "$CURRENT_DIR/config/fonts/HackNerdFont" "$fonts_dir"
+             find "$CURRENT_DIR/config/fonts/HackNerdFont" -type f -execdir cp -t "$fonts_dir" {} +
         fi
 
         echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Fonts installed and configured in$endColour$yellowColour $fonts_dir $endColour"
