@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+#shellcheck disable=1071
 
 set -o nounset                                                                                                                                         
 set -o errexit                                                                                                                                         
@@ -78,7 +79,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update
 
-    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools iputils-ping tldr docker.io docker-compose rsync
+    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools iputils-ping tldr docker.io docker-compose rsync tee
 }
 
 function setupCustomTerminalFont() {
