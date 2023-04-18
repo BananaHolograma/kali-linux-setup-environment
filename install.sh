@@ -208,7 +208,7 @@ function setupInfoSecTools() {
         if ! command_exists 'puredns' && command_exists 'massdns'; then 
             go install github.com/d3mondev/puredns/v2@latest
 
-            if [[ ! -d "$HOME_DIR/dns-resolvers"]]; then 
+            if [[ ! -d "$HOME_DIR/dns-resolvers" ]]; then 
                 wget -c -nc https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
                     && unzip main.zip && mv resolvers-main "$HOME_DIR/dns-resolvers" && rm main.zip
             fi
@@ -237,5 +237,7 @@ setupInfoSecTools
 setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
-sudo cp -r "$HOME_DIR/.{config,fonts}" "$ROOT_DIR" \
-    && sudo cp "$HOME_DIR"/.{zshrc,vimrc} "$ROOT_DIR"
+sudo cp -rf "$HOME_DIR"/.config "$ROOT_DIR"
+sudo cp -rf "$HOME_DIR"/.fonts "$ROOT_DIR" 
+sudo cp -f "$HOME_DIR"/.zshrc "$ROOT_DIR" 
+sudo cp -f "$HOME_DIR"/.vimrc "$ROOT_DIR"
