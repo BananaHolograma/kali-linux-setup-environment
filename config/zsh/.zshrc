@@ -150,11 +150,11 @@ runEnumeration() {
         subfinder -d $domain --silent -nW -o "$BASE_DIR/subfinder_subdomains.txt"
        
         # Make grepable the TLD termination like .com, .es .org, etc
-        regex_domain=$(echo $domain | sed s/\./\\./)
+        regex_domain=$(echo $domain | sed 's/\./\\./g')
 
         find "$BASE_DIR" -type f -name '*.txt' -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
         sort -u "$BASE_DIR/all_subdomains.txt" > .tmp && mv .tmp all_subdomains.txt
-        
+
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
 
         echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}\n"
@@ -163,10 +163,10 @@ runEnumeration() {
         gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 25 --o "$BASE_DIR"/urls.txt "$domain" 
 
         echo -e "${green}[+]$reset ${yellow} Running httpx tool on gathered urls from root domain $domain${reset}\n"
-        httpx -sc -ip -fr -list "$BASE_DIR"/urls.txt -o "$BASE_DIR"/http_probe
+        httpx -sc -ip -fr -list $(grep -Ei "$regex_domain" "$BASE_DIR/urls.txt") -o "$BASE_DIR/http_probe"
 
         echo -e "${green}[+]$reset ${yellow}Looking for .js files on root domain $domain${reset}\n"
-        getjs --insecure --complete --url "https://$domain" --verbose --output "$BASE_DIR"/js_files.txt
+        getjs --insecure --complete --url "https://$domain" --output "$BASE_DIR"/js_files.txt
 
         while IFS= read -r subdomain; do
             local SUBDOMAIN_BASE_DIR="$BASE_DIR/$subdomain"
@@ -175,14 +175,14 @@ runEnumeration() {
             mkdir -p "$SUBDOMAIN_BASE_DIR"
 
             echo -e "${green}[+]$reset ${yellow}Looking for .js files on $subdomain${reset}\n"
-            getjs --insecure --complete --url "https://$subdomain" --verbose --output "$SUBDOMAIN_BASE_DIR/js_files.txt"
+            getjs --insecure --complete --url "https://$subdomain" --output "$SUBDOMAIN_BASE_DIR/js_files.txt"
 
             echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on $subdomain${reset}\n"
             gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 25 --o "$SUBDOMAIN_BASE_DIR/urls.txt" "$subdomain"
 
             if [[ -f "$SUBDOMAIN_BASE_DIR/urls.txt" ]]; then 
                 echo -e "${green}[+]$reset ${yellow} Running httpx tool on gathered urls from subdomain $domain${reset}\n"
-                httpx -sc -ip -fr -list "$SUBDOMAIN_BASE_DIR/urls.txt" -o "$SUBDOMAIN_BASE_DIR/http_probe"
+                httpx -sc -ip -fr -list $(grep -Ei "$regex_domain" "$SUBDOMAIN_BASE_DIR/urls.txt") -o "$SUBDOMAIN_BASE_DIR/http_probe"
             fi
 
         done <<< "$all_subdomains"
