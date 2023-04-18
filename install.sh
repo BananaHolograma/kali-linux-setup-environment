@@ -167,10 +167,12 @@ function setupInfoSecTools() {
     sudo apt remove python3-httpx && sudo apt autoremove --purge
     sudo apt install -y firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
 
-    wget -c -nc --quiet https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
-        && sudo unzip -oq SecList.zip -d "/usr/share/" \
-        && sudo mv /usr/share/SecLists-master /usr/share/seclists \
-        && sudo rm -f SecList.zip
+    if [[ ! -d "/usr/share/SecLists" ]]; then 
+        wget -c -nc --quiet https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
+            && sudo unzip -oq SecList.zip -d "/usr/share/" \
+            && sudo mv /usr/share/SecLists-master /usr/share/SecLists \
+            && sudo rm -f SecList.zip
+    fi 
 
     if [[ ! -f "/usr/share/wordlists/rockyou.txt" ]]; then
         echo -e "${grayColour}[ WORDLISTS ]$endColour$yellowColour Extracting rockyou.txt.gz ... $endColour"
