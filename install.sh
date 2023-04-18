@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
 
-set -eou pipefail
-
+set -o nounset                                                                                                                                         
+set -o errexit                                                                                                                                         
+set -o pipefail                                                                                                                                        
+     
 # ANSII ESCAPE CODE COLOURS
 greenColour='\033[0;32m'
 redColour='\033[0;31m'
@@ -13,7 +15,7 @@ grayColour='\033[0;37m'
 
 endColour='\033[0m'
 
-CURRENT_DIR=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
+CURRENT_DIR=$(dirname -- "$(readlink -f -- "$0")")
 
 function user_exists() {
     local username=$1
@@ -33,12 +35,14 @@ create_non_existing_user='n'
 
 while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; do 
 
-    read -rp "Choose a user to apply the configuration: " SELECTED_USER
+    echo -e "Choose a user to apply the configuration: "
+    read -r  SELECTED_USER
 
     if ! user_exists "$SELECTED_USER"; then 
         echo -e "${redColour}The selected user$endColour$yellowColour $SELECTED_USER$endColour$redColour does not exists in this system.$endColour"
         
-        read -rp "Do you want to create it? [y]es / [n]o " create_non_existing_user
+        echo -e "Do you want to create it? [y]es / [n]o "
+        read -r create_non_existing_user
         
         if [ "$create_non_existing_user" = 'y' ]; then 
             useradd -m -g users -G wheel "$SELECTED_USER"
@@ -48,7 +52,8 @@ while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; d
 
 
     while [[ -z $SUDO_PASSWORD ]]; do 
-         read -rp "Write the sudo password for your user $SELECTED_USER to install packages with privileges: " SUDO_PASSWORD
+        echo -e "Write the sudo password for your user $SELECTED_USER to install packages with privileges: " 
+        read -r SUDO_PASSWORD
     done 
 done
 
