@@ -77,13 +77,13 @@ function prepareEnvironmentForTheInstallation() {
 }
 
 function setupCustomTerminalFont() {
-    echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Downloading HackNerdFont from$endColour$yellowColour https://github.com/ryanoasis/nerd-fonts$endColour"
-
     local fonts_dir="$HOME_DIR/.fonts"
 
-    if [ -f "$fonts_dir/Hack\ Regular\ Nerd\ Font\ Complete.ttf" ]; then
+    if [[ -f "$fonts_dir/Hack\ Regular\ Nerd\ Font\ Complete.ttf" ]]; then
         echo -e "${grayColour}[ FONTS ] HackNerdFont font is already installed in the system, skipping...${endColour}"
     else
+        echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Downloading HackNerdFont from$endColour$yellowColour https://github.com/ryanoasis/nerd-fonts$endColour"
+
         mkdir -p "$fonts_dir"
         
         if curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip; then 
@@ -133,9 +133,9 @@ function setupZSH() {
     sudo apt install -y zsh
 
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
-    touch "$ZSH_CONFIG_DIR/.zsh_history"
+    touch "$HOME_DIR/.zsh_history"
 
-    cat "$CURRENT_DIR/config/zsh/.zshrc" >> "$ZSH_CONFIG_DIR/.zshrc" 
+    cat "$CURRENT_DIR/config/zsh/.zshrc" >> "$HOME_DIR/.zshrc" 
 
     if [[ ! -d "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions" ]]; then 
         git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
