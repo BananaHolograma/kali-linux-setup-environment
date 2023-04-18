@@ -58,7 +58,7 @@ while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; d
 done
 
 HOME_DIR="/home/$SELECTED_USER"
-ROOT_DIR="$HOME"
+ROOT_DIR="/root"
 
 
 # Common folders to work
@@ -230,7 +230,5 @@ setupInfoSecTools
 setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
-cp -r "$HOME_DIR/.{config,fonts}" "$ROOT_DIR"
-cp "$HOME_DIR"/.{zshrc,vimrc} "$ROOT_DIR"
-
-chown -R "$SELECTED_USER":"$SELECTED_USER" target_home_config_dir
+sudo cp -r "$HOME_DIR/.{config,fonts}" "$ROOT_DIR" \
+    && sudo cp "$HOME_DIR"/.{zshrc,vimrc} "$ROOT_DIR"
