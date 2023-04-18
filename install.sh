@@ -35,13 +35,13 @@ create_non_existing_user='n'
 
 while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; do 
 
-    echo -e "Choose a user to apply the configuration: "
+    echo -n "Choose a user to apply the configuration: "
     read -r  SELECTED_USER
 
     if ! user_exists "$SELECTED_USER"; then 
         echo -e "${redColour}The selected user$endColour$yellowColour $SELECTED_USER$endColour$redColour does not exists in this system.$endColour"
         
-        echo -e "Do you want to create it? [y]es / [n]o "
+        echo -n "Do you want to create it? [y]es / [n]o "
         read -r create_non_existing_user
         
         if [ "$create_non_existing_user" = 'y' ]; then 
@@ -52,7 +52,7 @@ while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; d
 
 
     while [[ -z $SUDO_PASSWORD ]]; do 
-        echo -e "Write the sudo password for your user $SELECTED_USER to install packages with privileges: " 
+        echo -n "Write the sudo password for your user $SELECTED_USER to install packages with privileges: " 
         read -r SUDO_PASSWORD
     done 
 done
@@ -173,7 +173,7 @@ function setupInfoSecTools() {
     sudo apt install -y firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
 
     if [[ ! -d "/usr/share/SecLists" ]]; then 
-        wget -c -nc --quiet https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
+        wget -c -nc https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
             && sudo unzip -oq SecList.zip -d "/usr/share/" \
             && sudo mv /usr/share/SecLists-master /usr/share/SecLists \
             && sudo rm -f SecList.zip
@@ -184,10 +184,10 @@ function setupInfoSecTools() {
         sudo gunzip /usr/share/wordlists/rockyou.txt.gz
     fi 
 
-    wget --output-document --quiet crt https://raw.githubusercontent.com/s3r0s4pi3ns/crt/main/crt.sh \
+    wget --output-document crt https://raw.githubusercontent.com/s3r0s4pi3ns/crt/main/crt.sh \
         && chmod +x crt && sudo mv crt /usr/local/bin/
    
-    wget --output-document --quiet randomipzer https://raw.githubusercontent.com/s3r0s4pi3ns/randomipzer/main/randomipzer.sh \
+    wget --output-document randomipzer https://raw.githubusercontent.com/s3r0s4pi3ns/randomipzer/main/randomipzer.sh \
         && chmod +x randomipzer && sudo mv randomipzer /usr/local/bin/
 
     # GO binary path is exported on .zshrc
@@ -203,7 +203,7 @@ function setupInfoSecTools() {
         
         if ! command_exists 'puredns' && command_exists 'massdns'; then 
             go install github.com/d3mondev/puredns/v2@latest \
-                && wget -c -nc --quiet https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
+                && wget -c -nc https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
                 && unzip main.zip && mv resolvers-main dns-resolvers && rm main.zip
         fi 
 
@@ -230,5 +230,7 @@ setupInfoSecTools
 setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
-cp -p "$HOME_DIR/.config" "$ROOT_DIR" "$HOME_DIR/.zshrc" "$ROOT_DIR" "$HOME_DIR/.fonts" "$ROOT_DIR" "$HOME_DIR/.vimrc" "$ROOT_DIR"
+cp -r "$HOME_DIR/.{config,fonts}" "$ROOT_DIR"
+cp "$HOME_DIR"/.{zshrc,vimrc} "$ROOT_DIR"
+
 chown -R "$SELECTED_USER":"$SELECTED_USER" target_home_config_dir
