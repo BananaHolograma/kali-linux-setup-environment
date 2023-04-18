@@ -73,7 +73,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update
 
-    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools tldr
+    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools tldr docker.io docker-compose
 }
 
 function setupCustomTerminalFont() {
@@ -89,7 +89,7 @@ function setupCustomTerminalFont() {
         if curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip; then 
             unzip -oq Hack.zip -d "$fonts_dir" && rm Hack.zip
         else 
-            cp "$CURRENT_DIR/../config/fonts/HackNerdFont/*" "$fonts_dir"
+            cp "$CURRENT_DIR/config/fonts/HackNerdFont/*" "$fonts_dir"
         fi
 
         echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Fonts installed and configured in$endColour$yellowColour $fonts_dir $endColour"
@@ -100,14 +100,14 @@ function setupAndConfigureKitty() {
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Installing and configuring kitty GPU based terminal...$endColour"
 
     sudo apt install -y kitty \
-        && cp -r "$CURRENT_DIR/../config/kitty" "$target_home_config_dir"
+        && cp -r "$CURRENT_DIR/config/kitty" "$target_home_config_dir"
 
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Kitty GPU based terminal installed and configured on$endColour$cyanColour [ $(which kitty) ]$endColour"
 }
 
 function setupVim() {
     echo -e "${grayColour}[ VIM ]$endColour Installing and configuring VIM editor with basic initial configuration"
-    local VIM_CONFIG_DIR="$CURRENT_DIR/../config/vim/"
+    local VIM_CONFIG_DIR="$CURRENT_DIR/config/vim/"
     
     sudo apt install -y vim
 
@@ -135,7 +135,7 @@ function setupZSH() {
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$ZSH_CONFIG_DIR/.zsh_history"
 
-    cat "$CURRENT_DIR/../config/zsh/.zshrc" >> "$ZSH_CONFIG_DIR/.zshrc" 
+    cat "$CURRENT_DIR/config/zsh/.zshrc" >> "$ZSH_CONFIG_DIR/.zshrc" 
 
     git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
     rm -rf zsh-autosuggestions/.git && mv zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins/"
@@ -143,7 +143,7 @@ function setupZSH() {
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
     rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
 
-    cp "$CURRENT_DIR/../config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
+    cp "$CURRENT_DIR/config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
 
     chsh -s "$(which zsh)" # Change default shell for the actual user
     zsh
@@ -184,7 +184,7 @@ function setupInfoSecTools() {
         ! command_exists 'gau' && go install github.com/lc/gau/v2/cmd/gau@latest
         ! command_exists 'subfinder' && go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
         ! command_exists 'httpx' && exit 1 && go install github.com/projectdiscovery/httpx/cmd/httpx@latest
-        ! command_exists 'gotator' &&  go install github.com/Josue87/gotator@latest
+        ! command_exists 'gotator' && go install github.com/Josue87/gotator@latest
         ! command_exists 'getjs' && go install github.com/003random/getJS@latest
         
         if ! command_exists 'puredns' && command_exists 'massdns'; then 
