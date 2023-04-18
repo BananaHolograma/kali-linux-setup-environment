@@ -81,7 +81,7 @@ function setupCustomTerminalFont() {
 
     local fonts_dir="$HOME_DIR/.fonts"
 
-    if [ -d "$fonts_dir/HackNerdFont" ]; then
+    if [ -f "$fonts_dir/Hack\ Regular\ Nerd\ Font\ Complete.ttf" ]; then
         echo -e "${grayColour}[ FONTS ] HackNerdFont font is already installed in the system, skipping...${endColour}"
     else
         mkdir -p "$fonts_dir"
@@ -89,7 +89,7 @@ function setupCustomTerminalFont() {
         if curl -sLo Hack.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Hack.zip; then 
             unzip -oq Hack.zip -d "$fonts_dir" && rm Hack.zip
         else 
-            cp "$CURRENT_DIR/config/fonts/HackNerdFont/*" "$fonts_dir"
+            cp "$CURRENT_DIR/config/fonts/HackNerdFont" "$fonts_dir"
         fi
 
         echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Fonts installed and configured in$endColour$yellowColour $fonts_dir $endColour"
@@ -142,8 +142,6 @@ function setupZSH() {
 
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
     rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
-
-    cp "$CURRENT_DIR/config/zsh/plugins/colored-man-pages/*" "$ZSH_CONFIG_DIR/plugins"
 
     chsh -s "$(which zsh)" # Change default shell for the actual user
     zsh
