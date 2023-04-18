@@ -73,7 +73,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update
 
-    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools tldr docker.io docker-compose
+    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools tldr docker.io docker-compose rsync
 }
 
 function setupCustomTerminalFont() {
@@ -137,14 +137,17 @@ function setupZSH() {
 
     cat "$CURRENT_DIR/config/zsh/.zshrc" >> "$ZSH_CONFIG_DIR/.zshrc" 
 
-    git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
-    rm -rf zsh-autosuggestions/.git && mv zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins/"
+    if [[ ! -d "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions" ]]; then 
+        git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
+        rm -rf zsh-autosuggestions/.git && mv zsh-autosuggestions "$ZSH_CONFIG_DIR/plugins/"
+    fi
+ 
+    if [[ ! -d "$ZSH_CONFIG_DIR/plugins/zsh-syntax-highlighting" ]]; then 
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
+        rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
+    fi
 
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
-    rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
-
-    chsh -s "$(which zsh)" # Change default shell for the actual user
-    zsh
+    source "$HOME_DIR/.zshrc"
 }
 
 function setupNVM() {
