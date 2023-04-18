@@ -79,7 +79,7 @@ function prepareEnvironmentForTheInstallation() {
 function setupCustomTerminalFont() {
     local fonts_dir="$HOME_DIR/.fonts"
 
-    if [[ -f "$fonts_dir/Hack\ Regular\ Nerd\ Font\ Complete.ttf" ]]; then
+    if [[ -f "$fonts_dir"/Hack\ Regular\ Nerd\ Font\ Complete.ttf ]]; then
         echo -e "${grayColour}[ FONTS ] HackNerdFont font is already installed in the system, skipping...${endColour}"
     else
         echo -e "${grayColour}[ FONTS ]$endColour$yellowColour Downloading HackNerdFont from$endColour$yellowColour https://github.com/ryanoasis/nerd-fonts$endColour"
@@ -123,19 +123,22 @@ function setupVim() {
 
 function setupZSH() {
     echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Installing and configuring zsh$endColour"
+
     local ZSH_CONFIG_DIR="$HOME_DIR/.config/zsh"
+
+    sudo apt install -y zsh
 
     if [ -f "$HOME_DIR"/.zshrc ]; then
         echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Detected existing .zshrc file, creating backup on$endColour$cyanColour $config_backup_folder"
         cp "$HOME_DIR"/.zshrc "$config_backup_folder"
     fi
 
-    sudo apt install -y zsh
-
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$HOME_DIR/.zsh_history"
 
-    cat "$CURRENT_DIR/config/zsh/.zshrc" >> "$HOME_DIR/.zshrc" 
+    if ! grep -i "go/bin" "$HOME_DIR/.zshrc"; then 
+        cat "$CURRENT_DIR/config/zsh/.zshrc" >> "$HOME_DIR/.zshrc" 
+    fi
 
     if [[ ! -d "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions" ]]; then 
         git clone https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
@@ -146,16 +149,12 @@ function setupZSH() {
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
         rm -rf zsh-syntax-highlighting/.git && mv zsh-syntax-highlighting "$ZSH_CONFIG_DIR/plugins/"
     fi
-
-    source "$HOME_DIR/.zshrc"
 }
 
 function setupNVM() {
     echo -e "${grayColour}[ NVM ]$endColour$yellowColour Installing NVM (Node Version Manager) and set as default the LTS version$endColour"
 
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-
-    source "$HOME_DIR/.zshrc"
     
     nvm install --lts && nvm use --lts
 }
