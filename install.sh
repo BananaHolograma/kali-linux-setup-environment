@@ -73,7 +73,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update
 
-    sudo apt upgrade -y && sudo apt install git curl wget vim net-tools tldr
+    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools tldr
 }
 
 function setupCustomTerminalFont() {
@@ -99,7 +99,7 @@ function setupCustomTerminalFont() {
 function setupAndConfigureKitty() {
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Installing and configuring kitty GPU based terminal...$endColour"
 
-    sudo apt install kitty \
+    sudo apt install -y kitty \
         && cp -r "$CURRENT_DIR/../config/kitty" "$target_home_config_dir"
 
     echo -e "${grayColour}[ KITTY ]$endColour$yellowColour Kitty GPU based terminal installed and configured on$endColour$cyanColour [ $(which kitty) ]$endColour"
@@ -109,7 +109,7 @@ function setupVim() {
     echo -e "${grayColour}[ VIM ]$endColour Installing and configuring VIM editor with basic initial configuration"
     local VIM_CONFIG_DIR="$CURRENT_DIR/../config/vim/"
     
-    sudo apt install vim
+    sudo apt install -y vim
 
     if [ -f "$HOME_DIR"/.vimrc ]; then
         echo -e "${grayColour}[ VIM ]$endColour$yellowColour Detected existing .vimrc file, creating backup on$endColour$cyanColour $config_backup_folder"
@@ -130,7 +130,7 @@ function setupZSH() {
         cp "$HOME_DIR"/.zshrc "$config_backup_folder"
     fi
 
-    sudo apt install zsh
+    sudo apt install -y zsh
 
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$ZSH_CONFIG_DIR/.zsh_history"
@@ -161,7 +161,7 @@ function setupNVM() {
 
 function setupInfoSecTools() {
     sudo apt remove python3-httpx 
-    sudo apt install firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb spice-vdagent spice-webagent
+    sudo apt install -y firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb spice-vdagent spice-webagent
 
     wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
         && unzip -oq SecList.zip -d "/usr/share/" \
@@ -199,7 +199,7 @@ function setupInfoSecTools() {
 function setupTerminalUtils() {
     echo -e "${grayColour}[ TERMINAL UTILS ]$endColour Installing and configuring terminal utils...$endColour"
     
-    sudo apt install bat fzf lsd bash-completion \
+    sudo apt install -y bat fzf lsd bash-completion \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
 }
 
