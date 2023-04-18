@@ -1,43 +1,4 @@
-![Archlinux_logo](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.archlinux.org%2Fstatic%2Flogos%2Farchlinux-logo-black-1200dpi.94d8489023b3.png&f=1&nofb=1&ipt=478b55c74f2437d3bcb6174d0fb5e110e3a930f8ef1e833ef3c7e151d6506b55&ipo=images)
-
-This is my initial configuration I apply on all my ArchLinux installations, it contains a minimal setup to start being productive in no time.
-
-# Requirements
-
-## Gnome
-
-This configuration is based on gnome desktop environment because I set up some custom keyboard layouts by using the package `gnome-tweaks`. So make sure you have installed the gnome desktop environment before start the script to get the best of it.
-In case you don't have it yet on your ArchLinux just install them and reboot the system:
-
-```bash
-pacman -S gnome gnome-tweaks
-
-systemctl enable gdm # gnome display manager
-# or
-systemctl enable gdm.service
-
-reboot
-```
-
-## Packages
-
-```bash
-sudo pacman -s git sudo
-```
-
-## Recommendations
-
-It's recommended to run this script as non-privileged user like root, create a new user for that:
-
-```bash
-useradd -m -g users -G wheel <username>
-passwd <username>
-
-pacman -S sudo
-
-# Uncomment line %wheel ALL=(ALL:ALL) ALL
-EDITOR=vim visudo
-```
+![Archlinux_logo](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.kali.org%2Fblog%2Fkali-linux-1-1-0-release%2Fimages%2Fkali-wallpaper-2015-v1.1.0.png&f=1&nofb=1&ipt=8e5aeb4006c53e4f19629f2ec24281002fe29a4fc8984c43dc5f96b6a5c1613e&ipo=images)
 
 # Configuration
 
@@ -68,11 +29,12 @@ The minimalist setup for zsh with plugins that works for me and I use everyday. 
 
 ```bash
 # Clone the repository with git
-git clone https://github.com/s3r0s4pi3ns/archlinux-post-install-setup.git
+git clone https://github.com/s3r0s4pi3ns/kali-linux-setup-environment.git
 # Or download it and unzip
-curl -O https://github.com/s3r0s4pi3ns/archlinux-post-install-setup/archive/refs/heads/main.zip \
+curl -O https://github.com/s3r0s4pi3ns/kali-linux-setup-environment/archive/refs/heads/main.zip \
     && unzip main.zip
 
-# Run the script
-./archlinux-post-install-setup/install.sh
+# Run the script on home directory
+cd ~
+bash ./kali-linux-setup-environment/install.sh
 ```

@@ -160,7 +160,7 @@ function setupNVM() {
 
 function setupInfoSecTools() {
     echo "$SUDO_PASSWORD" | sudo -S apt remove python3-httpx 
-    echo "$SUDO_PASSWORD" | sudo -S apt install firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
+    echo "$SUDO_PASSWORD" | sudo -S apt install firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb spice-vdagent spice-webagent
 
     wget -c https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
         && unzip -oq SecList.zip -d "/usr/share/" \
