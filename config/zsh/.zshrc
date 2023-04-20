@@ -394,23 +394,23 @@ startDomainHunt() {
 
 fetchDomainData() {
     local DOMAIN=$1
-    local BASE_DIR=${2:-"$HOME/Hunts/recon/$DOMAIN"}
+    local BASE_DIR=${2:-"$HOME/Hunts/$(echo $DOMAIN | awk -F "." '{print $(NF-1)"."$NF}')/recon/$DOMAIN"}
     # Translate example.com to example\.com to make valid as value on regex
     local regex_domain=$(echo $DOMAIN | sed 's/\./\\./g')
 
     echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on domain $DOMAIN${reset}"
-    gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 50 --o "$BASE_DIR"/urls.txt "$DOMAIN" 
+    gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 50 --o "$BASE_DIR/urls.txt" "$DOMAIN" 
 
     if [[ -f "$BASE_DIR/urls.txt" ]]; then 
         echo -e "${green}[+]$reset ${yellow}Running httpx tool on gathered urls from domain $DOMAIN${reset}\n"
         grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | sort -u | httpx -sc -ip -fr -o "$BASE_DIR/http_probe"
     
         echo -e "${green}[+]$reset ${yellow}Gathering extra urls and js files with hakrawler on domain $DOMAIN${reset}\n"
-        cat "$BASE_DIR/http_probe" | awk '{print $1}' | sort -u | hakrawler -t 20 -proxy http://127.0.0.1:9050 -timeout 5 >> "$BASE_DIR"/urls.txt
+        cat "$BASE_DIR/http_probe" | awk '{print $1}' | sort -u | hakrawler -t 20 -proxy http://127.0.0.1:9050 -timeout 5 >> "$BASE_DIR/urls.txt"
     fi
 
     echo -e "${green}[+]$reset ${yellow}Looking for .js files on domain $DOMAIN${reset}\n"
-    getjs --insecure --complete --url "https://$DOMAIN" --output "$BASE_DIR"/js_files.txt
+    getjs --insecure --complete --url "https://$DOMAIN" --output "$BASE_DIR/js_files.txt"
 }
 
 runEnumeration() {
@@ -447,11 +447,10 @@ runEnumeration() {
         
         # Create a folder for each subdomain
         cat "$BASE_DIR/all_subdomains.txt" | xargs -P10 -I {} mkdir -m 766 -p "$BASE_DIR/{}"
-        chmod -R 0766 "$BASE_DIR"
 
-        fetchDomainData "$domain" "$BASE_DIR"
+        fetchDomainData "$domain" "$BASE_DIR" &
 
-        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN" "$HOME/Hunts/recon/$DOMAIN"'  
+        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN"'  
    
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
