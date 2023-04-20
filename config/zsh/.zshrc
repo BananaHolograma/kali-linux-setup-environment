@@ -432,21 +432,21 @@ runEnumeration() {
         amass enum --passive -d $domain -o "$BASE_DIR/amass_subdomains.txt"
 
         echo -e "${green}[+]$reset ${yellow}Running subfinder passive enumeration${reset}\n"
-        subfinder -v -d $domain --silent -nW -o "$BASE_DIR/subfinder_subdomains.txt"
+        subfinder -d $domain --silent -nW -o "$BASE_DIR/subfinder_subdomains.txt"
        
         # Make grepable the TLD termination like .com, .es .org, etc
         regex_domain=$(echo $domain | sed 's/\./\\./g')
 
         # Filter and remove duplicates
-        find "$BASE_DIR" -type f -name '*.txt' -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
+        find "$BASE_DIR" -type f -name '*.txt' -not -name "all_subdomains.txt" -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
         cat "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" | sort -u > .tmp && mv .tmp all_subdomains.txt
-        total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
 
+        total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
         echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}"
         
         fetchDomainData $domain $BASE_DIR
 
-        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} bash -c 'fetchDomainData {} "$BASE_DIR/$subdomain"'  
+        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c 'fetchDomainData {} "$BASE_DIR/$subdomain"'  
    
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
