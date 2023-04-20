@@ -367,7 +367,7 @@ isValidDomain() {
     local domain=${1:-}
 
     # Seems that ZSH does not support return directly [[ ... ]]
-    if [[ -n $domain && $domain =~ ^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.[a-zA-Z]{2,24}$ ]]; then 
+    if [ -n $domain && $domain =~ ^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.[a-zA-Z]{2,24}$ ]; then 
         return 0
     else 
         return 1
@@ -394,7 +394,7 @@ startDomainHunt() {
 
 fetchDomainData() {
     local DOMAIN=$1
-    local BASE_DIR=${2:-"$HOME/Hunts/recon/$(echo "$DOMAIN" | awk -F "." '{print $(NF-1)"."$NF}')"}
+    local BASE_DIR=${2:-"$HOME/Hunts/recon/$DOMAIN"}
     # Translate example.com to example\.com to make valid as value on regex
     local regex_domain=$(echo $DOMAIN | sed 's/\./\\./g')
 
@@ -403,7 +403,7 @@ fetchDomainData() {
     echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on domain $DOMAIN${reset}"
     gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 50 --o "$BASE_DIR"/urls.txt "$DOMAIN" 
 
-    if [[ -f "$BASE_DIR/urls.txt" ]]; then 
+    if [ -f "$BASE_DIR/urls.txt" ]; then 
         echo -e "${green}[+]$reset ${yellow}Running httpx tool on gathered urls from domain $DOMAIN${reset}\n"
         grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | sort -u | httpx -sc -ip -fr -o "$BASE_DIR/http_probe"
     
@@ -447,9 +447,9 @@ runEnumeration() {
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
         echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}"
         
-        fetchDomainData $domain $BASE_DIR
+        fetchDomainData "$domain" "$BASE_DIR"
 
-        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; eval $(typeset -f fetchDomainData); fetchDomainData {} "$HOME/Hunts/recon/{}"'  
+        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval $(typeset -f fetchDomainData); fetchDomainData "$DOMAIN" "$HOME/Hunts/recon/$DOMAIN"'  
    
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
