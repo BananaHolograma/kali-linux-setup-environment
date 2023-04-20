@@ -367,7 +367,7 @@ isValidDomain() {
     local domain=${1:-}
 
     # Seems that ZSH does not support return directly [[ ... ]]
-    if [ -n $domain && $domain =~ ^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.[a-zA-Z]{2,24}$ ]; then 
+    if [[ -n $domain && $domain =~ ^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.[a-zA-Z]{2,24}$ ]]; then 
         return 0
     else 
         return 1
@@ -375,16 +375,16 @@ isValidDomain() {
 }
 
 startDomainHunt() {
-    local domain=${1:-}
+    local DOMAIN=${1:-}
 
-   if  isValidDomain "$domain"; then
-        local base_dir="$HOME/Hunts/$domain"
-        echo -e "${green}[+]$reset ${yellow}Creating initial folders and files on $base_dir to open the hunt...$reset"
+   if  isValidDomain "$DOMAIN"; then
+        local BASE_DIR="$HOME/Hunts/$DOMAIN"
+        echo -e "${green}[+]$reset ${yellow}Creating initial folders and files on $BASE_DIR to open the hunt...$reset"
 
-        mkdir -p "$base_dir"/{recon,exploits}
-        touch "$base_dir"/notes.dat
-
-        cd "$base_dir"
+        mkdir -m 0766 -p "$BASE_DIR"/{recon,exploits}
+        touch "$BASE_DIR"/notes.dat
+       
+        cd "$BASE_DIR"
 
         echo -e "[+] Finished succesfully, enjoy your hunt $USER!"
     else 
@@ -398,12 +398,12 @@ fetchDomainData() {
     # Translate example.com to example\.com to make valid as value on regex
     local regex_domain=$(echo $DOMAIN | sed 's/\./\\./g')
 
-    mkdir -p "$BASE_DIR"
+    mkdir -m 0766 -p "$BASE_DIR"
 
     echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on domain $DOMAIN${reset}"
     gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 50 --o "$BASE_DIR"/urls.txt "$DOMAIN" 
 
-    if [ -f "$BASE_DIR/urls.txt" ]; then 
+    if [[ -f "$BASE_DIR/urls.txt" ]]; then 
         echo -e "${green}[+]$reset ${yellow}Running httpx tool on gathered urls from domain $DOMAIN${reset}\n"
         grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | sort -u | httpx -sc -ip -fr -o "$BASE_DIR/http_probe"
     
@@ -421,6 +421,8 @@ runEnumeration() {
     if  isValidDomain "$domain"; then
         local start_time=$(date +%s.%N)
         local BASE_DIR="$HOME/Hunts/$domain/recon"
+
+        chmod -R 0766 "$BASE_DIR"
 
         echo -e "${green}[+]$reset ${yellow}Initial enumeration started for domain $domain${reset}\n"
 
@@ -449,7 +451,7 @@ runEnumeration() {
         
         fetchDomainData "$domain" "$BASE_DIR"
 
-        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval $(typeset -f fetchDomainData); fetchDomainData "$DOMAIN" "$HOME/Hunts/recon/$DOMAIN"'  
+        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN" "$HOME/Hunts/recon/$DOMAIN"'  
    
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
