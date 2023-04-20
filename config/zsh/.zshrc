@@ -405,17 +405,15 @@ fetchDomainData() {
 
     if [[ -f "$BASE_DIR/urls.txt" ]]; then 
         echo -e "${green}[+]$reset ${yellow}Running httpx tool on gathered urls from domain $DOMAIN${reset}\n"
-        grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | httpx -sc -ip -fr -o "$BASE_DIR/http_probe"
+        grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | sort -u | httpx -sc -ip -fr -o "$BASE_DIR/http_probe"
     
         echo -e "${green}[+]$reset ${yellow}Gathering extra urls and js files with hakrawler on domain $DOMAIN${reset}\n"
-        cat "$BASE_DIR/http_probe" | hakrawler -t 20 -proxy http://127.0.0.1:9050 -timeout 5  >> "$BASE_DIR"/urls.txt
+        cat "$BASE_DIR/http_probe" | awk 'print {$1}' | sort -u | hakrawler -t 20 -proxy http://127.0.0.1:9050 -timeout 5 >> "$BASE_DIR"/urls.txt
     fi
 
     echo -e "${green}[+]$reset ${yellow}Looking for .js files on domain $DOMAIN${reset}\n"
     getjs --insecure --complete --url "https://$DOMAIN" --output "$BASE_DIR"/js_files.txt
 }
-
-export -f fetchDomainData
 
 runEnumeration() {
     local domain=${1:-$(basename $PWD)}
@@ -426,6 +424,11 @@ runEnumeration() {
 
         echo -e "${green}[+]$reset ${yellow}Initial enumeration started for domain $domain${reset}\n"
 
+        echo -e "${green}[+]$reset ${yellow}DNS lookup on $domain${reset}\n"
+        dnsrecon -a -d "$domain" > "$BASE_DIR/dns.txt"
+        dig @1.1.1.1 "$domain" >> "$BASE_DIR/dns.txt"
+        whois -h whois.radb.net $(dig +short "$domain" | head -1) >> "$BASE_DIR/whois.txt"
+        
         crt -o "$BASE_DIR" $domain
 
         echo -e "${green}[+]$reset ${yellow}Running amass basic enumeration, be patient...${reset}\n"
@@ -438,15 +441,15 @@ runEnumeration() {
         regex_domain=$(echo $domain | sed 's/\./\\./g')
 
         # Filter and remove duplicates
-        find "$BASE_DIR" -type f -name '*.txt' -not -name "all_subdomains.txt" -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
-        cat "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" | sort -u > .tmp && mv .tmp all_subdomains.txt
+        find "$BASE_DIR" -type f -name '*subdomains.txt' -not -name "all_subdomains.txt" -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
+        cat "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" | sort -u > .tmp && mv .tmp "$BASE_DIR/all_subdomains.txt"
 
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
         echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}"
         
         fetchDomainData $domain $BASE_DIR
 
-        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c 'fetchDomainData {} "$BASE_DIR/$subdomain"'  
+        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; eval $(typeset -f fetchDomainData); fetchDomainData {} "$BASE_DIR/$subdomain"'  
    
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
