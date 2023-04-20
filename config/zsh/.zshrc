@@ -449,8 +449,8 @@ runEnumeration() {
         cat "$BASE_DIR/all_subdomains.txt" | xargs -P10 -I {} mkdir -m 766 -p "$BASE_DIR/{}"
     
         echo -e "${green}[+]$reset${yellow} Adding extra permuted subdomains and resolve with puredns to retrieve only valid domains...${reset}"
-        gotator -sub collected_subdomains.txt -perm /usr/share/SecLists/Discovery/DNS/subdomains-top1million-20000.txt -depth 1 -numbers 10 -mindup -adv -md -silent > "$BASE_DIR/subdomains_to_resolve.txt"
-        puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" -r "$HOME/dns-resolvers/resolvers.txt" --write valid_alt_domains.txt
+        gotator -sub "$BASE_DIR/all_subdomains.txt" -perm /usr/share/SecLists/Discovery/DNS/subdomains-top1million-20000.txt -depth 1 -numbers 10 -mindup -adv -md -silent > "$BASE_DIR/subdomains_to_resolve.txt" \
+            && puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" -r "$HOME/dns-resolvers/resolvers.txt" --write "$BASE_DIR/valid_alt_domains.txt"
         
         fetchDomainData "$domain" "$BASE_DIR" 1>/dev/null &
 
@@ -458,7 +458,7 @@ runEnumeration() {
    
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
-        printf "Enumeration finished on a total of %.2f seconds.\n" "$elapsed_time"
+        printf "Enumeration finished for $domain on a total of %.2f seconds.\n" "$elapsed_time"
     else 
         echo -e "[-] The argument is not a valid domain"
     fi
