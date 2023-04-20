@@ -447,8 +447,12 @@ runEnumeration() {
         
         # Create a folder for each subdomain
         cat "$BASE_DIR/all_subdomains.txt" | xargs -P10 -I {} mkdir -m 766 -p "$BASE_DIR/{}"
-
-        fetchDomainData "$domain" "$BASE_DIR" &
+    
+        echo -e "${green}[+]$reset${yellow} Adding extra permuted subdomains and resolve with puredns to retrieve only valid domains...${reset}"
+        gotator -sub collected_subdomains.txt -perm /usr/share/SecLists/Discovery/DNS/subdomains-top1million-20000.txt -depth 1 -numbers 10 -mindup -adv -md -silent > "$BASE_DIR/subdomains_to_resolve.txt"
+        puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" -r "$HOME/dns-resolvers/resolvers.txt" --write valid_alt_domains.txt
+        
+        fetchDomainData "$domain" "$BASE_DIR" 1>/dev/null &
 
         cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN"'  
    
