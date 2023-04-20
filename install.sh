@@ -143,7 +143,7 @@ function setupZSH() {
     touch "$HOME_DIR/.zsh_history"
 
     if ! grep -i "go/bin" "$HOME_DIR/.zshrc"; then 
-        cat "$CURRENT_DIR/config/zsh/.zshrc" >> "$HOME_DIR/.zshrc" 
+        cat "$CURRENT_DIR/config/zsh/.zshrc" > "$HOME_DIR/.zshrc" 
     fi
 
     if [[ ! -d "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions" ]]; then 
