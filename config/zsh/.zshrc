@@ -392,6 +392,31 @@ startDomainHunt() {
     fi
 }
 
+fetchDomainData() {
+    local DOMAIN=$1
+    local BASE_DIR=$2
+    # Translate example.com to example\.com to make valid as value on regex
+    local regex_domain=$(echo $DOMAIN | sed 's/\./\\./g')
+
+    mkdir -p "$BASE_DIR"
+
+    echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on domain $DOMAIN${reset}"
+    gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 50 --o "$BASE_DIR"/urls.txt "$DOMAIN" 
+
+    if [[ -f "$BASE_DIR/urls.txt" ]]; then 
+        echo -e "${green}[+]$reset ${yellow}Running httpx tool on gathered urls from domain $DOMAIN${reset}\n"
+        grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | httpx --verbose -sc -ip -fr -o "$BASE_DIR/http_probe"
+    
+        echo -e "${green}[+]$reset ${yellow}Gathering extra urls and js files with hakrawler on domain $DOMAIN${reset}\n"
+        cat "$BASE_DIR/http_probe" | hakrawler -t 20 -proxy http://127.0.0.1:9050 -timeout 5  >> "$BASE_DIR"/urls.txt
+    fi
+
+    echo -e "${green}[+]$reset ${yellow}Looking for .js files on domain $DOMAIN${reset}\n"
+    getjs --insecure --complete --url "https://$DOMAIN" --output "$BASE_DIR"/js_files.txt
+}
+
+export -f fetchDomainData
+
 runEnumeration() {
     local domain=${1:-$(basename $PWD)}
 
@@ -412,44 +437,17 @@ runEnumeration() {
         # Make grepable the TLD termination like .com, .es .org, etc
         regex_domain=$(echo $domain | sed 's/\./\\./g')
 
+        # Filter and remove duplicates
         find "$BASE_DIR" -type f -name '*.txt' -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
-        sort -u "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" > .tmp && mv .tmp all_subdomains.txt
-
+        cat "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" | sort -u > .tmp && mv .tmp all_subdomains.txt
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
 
-        echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}\n"
+        echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}"
         
-        echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on root domain $domain${reset}\n"
-        gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 25 --o "$BASE_DIR"/urls.txt "$domain" 
+        fetchDomainData $domain $BASE_DIR
 
-
-        if [[ -f "$BASE_DIR/urls.txt" ]]; then 
-            echo -e "${green}[+]$reset ${yellow} Running httpx tool on gathered urls from root domain $domain${reset}\n"
-            grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | httpx -sc -ip -fr -o "$BASE_DIR/http_probe"
-        fi
-
-        echo -e "${green}[+]$reset ${yellow}Looking for .js files on root domain $domain${reset}\n"
-        getjs --insecure --complete --url "https://$domain" --output "$BASE_DIR"/js_files.txt
-
-        while IFS= read -r subdomain; do
-            local SUBDOMAIN_BASE_DIR="$BASE_DIR/$subdomain"
-
-            echo -e "${green}[+]$reset ${yellow}Creating folder for subdomain $subdomain${reset}\n"
-            mkdir -p "$SUBDOMAIN_BASE_DIR"
-
-            echo -e "${green}[+]$reset ${yellow}Looking for .js files on $subdomain${reset}\n"
-            getjs --insecure --complete --url "https://$subdomain" --output "$SUBDOMAIN_BASE_DIR/js_files.txt"
-
-            echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on $subdomain${reset}\n"
-            gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 25 --o "$SUBDOMAIN_BASE_DIR/urls.txt" "$subdomain"
-
-            if [[ -f "$SUBDOMAIN_BASE_DIR/urls.txt" ]]; then 
-                echo -e "${green}[+]$reset ${yellow} Running httpx tool on gathered urls from subdomain $domain${reset}\n"
-                grep -Ei "$regex_domain" "$SUBDOMAIN_BASE_DIR/urls.txt" | httpx -sc -ip -fr -o "$SUBDOMAIN_BASE_DIR/http_probe"
-            fi
-
-        done < "$BASE_DIR/all_subdomains.txt"
-
+        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} bash -c 'fetchDomainData {} "$BASE_DIR/$subdomain"'  
+   
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
         printf "Enumeration finished on a total of %.2f seconds.\n" "$elapsed_time"
