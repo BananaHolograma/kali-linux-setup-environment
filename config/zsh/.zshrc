@@ -454,7 +454,7 @@ runEnumeration() {
         
         fetchDomainData "$domain" "$BASE_DIR" 1>/dev/null &
 
-        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN"'  
+        cat "$BASE_DIR/valid_alt_domains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN"'  
    
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
