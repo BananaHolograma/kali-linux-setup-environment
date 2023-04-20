@@ -381,7 +381,7 @@ startDomainHunt() {
         local BASE_DIR="$HOME/Hunts/$DOMAIN"
         echo -e "${green}[+]$reset ${yellow}Creating initial folders and files on $BASE_DIR to open the hunt...$reset"
 
-        mkdir -m 0766 -p "$BASE_DIR"/{recon,exploits}
+        mkdir -m 766 -p "$BASE_DIR"/{recon,exploits}
         touch "$BASE_DIR"/notes.dat
        
         cd "$BASE_DIR"
@@ -397,8 +397,6 @@ fetchDomainData() {
     local BASE_DIR=${2:-"$HOME/Hunts/recon/$DOMAIN"}
     # Translate example.com to example\.com to make valid as value on regex
     local regex_domain=$(echo $DOMAIN | sed 's/\./\\./g')
-
-    mkdir -m 0766 -p "$BASE_DIR"
 
     echo -e "${green}[+]$reset ${yellow}Running gau to fetch available urls on domain $DOMAIN${reset}"
     gau --retries 3 --blacklist png,jpg,gif,jpeg,svg,css,ttf,woff --fc 404,302 --threads 50 --o "$BASE_DIR"/urls.txt "$DOMAIN" 
@@ -422,8 +420,6 @@ runEnumeration() {
         local start_time=$(date +%s.%N)
         local BASE_DIR="$HOME/Hunts/$domain/recon"
 
-        chmod -R 0766 "$BASE_DIR"
-
         echo -e "${green}[+]$reset ${yellow}Initial enumeration started for domain $domain${reset}\n"
 
         echo -e "${green}[+]$reset ${yellow}DNS lookup on $domain${reset}\n"
@@ -444,11 +440,15 @@ runEnumeration() {
 
         # Filter and remove duplicates
         find "$BASE_DIR" -type f -name '*subdomains.txt' -not -name "all_subdomains.txt" -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
-        cat "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" | sort -u > .tmp && mv .tmp "$BASE_DIR/all_subdomains.txt"
+        cat "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" | grep -Ev "^(www.)?$regex_domain$" | sort -u > .tmp && mv .tmp "$BASE_DIR/all_subdomains.txt"
 
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
         echo -e "${green}[+]$reset ${yellow}Found a total of ${cyan}${total_results}$reset ${yellow}subdomains${reset}"
         
+        # Create a folder for each subdomain
+        cat "$BASE_DIR/all_subdomains.txt" | xargs -P10 -I {} mkdir -m 766 -p "$BASE_DIR/{}"
+        chmod -R 0766 "$BASE_DIR"
+
         fetchDomainData "$domain" "$BASE_DIR"
 
         cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN" "$HOME/Hunts/recon/$DOMAIN"'  
