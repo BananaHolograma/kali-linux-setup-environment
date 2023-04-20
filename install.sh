@@ -205,6 +205,7 @@ function setupInfoSecTools() {
         ! command_exists 'httpx' && go install github.com/projectdiscovery/httpx/cmd/httpx@latest
         ! command_exists 'gotator' && go install github.com/Josue87/gotator@latest
         ! command_exists 'getjs' && go install github.com/003random/getJS@latest
+        ! command_exists 'dnsx' && go install github.com/projectdiscovery/dnsx/cmd/dnsx@latest
         
         if ! command_exists 'puredns' && command_exists 'massdns'; then 
             go install github.com/d3mondev/puredns/v2@latest
@@ -212,7 +213,12 @@ function setupInfoSecTools() {
             if [[ ! -d "$HOME_DIR/dns-resolvers" ]]; then 
                 wget -c -nc https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
                     && unzip main.zip && mv resolvers-main "$HOME_DIR/dns-resolvers" && rm main.zip
+
+                git clone https://github.com/vortexau/dnsvalidator.git \
+                    && cd dns-validator && python setup.py install && cd ..
             fi
+
+     
         fi 
 
     fi

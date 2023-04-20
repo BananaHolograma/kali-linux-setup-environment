@@ -439,7 +439,7 @@ runEnumeration() {
         regex_domain=$(echo $domain | sed 's/\./\\./g')
 
         # Filter and remove duplicates
-        find "$BASE_DIR" -type f -name '*subdomains.txt' -not -name "all_subdomains.txt" -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
+        find "$BASE_DIR" -type f -name '*subdomains.txt' -not -name "all_subdomains.txt" -not -name "asn.txt" -exec cat {} >> "$BASE_DIR/all_subdomains.txt" \;
         cat "$BASE_DIR/all_subdomains.txt" | grep -Ev "(2a\.|\*\.)+$regex_domain" | grep -Ev "^(www.)?$regex_domain$" | sort -u > .tmp && mv .tmp "$BASE_DIR/all_subdomains.txt"
 
         total_results=$(wc -l "$BASE_DIR/all_subdomains.txt" | grep -Eo '[0-9]+')
@@ -447,9 +447,12 @@ runEnumeration() {
         
         # Create a folder for each subdomain
         cat "$BASE_DIR/all_subdomains.txt" | xargs -P10 -I {} mkdir -m 766 -p "$BASE_DIR/{}"
-    
+
+        echo -e "${green}[+]$reset ${yellow}Retrieving ASN numbers for the given subdomains${reset}"
+        cat "$BASE_DIR/all_subdomains.txt" | dnsx -silent -asn -o "$BASE_DIR/asn.txt"
+
         echo -e "${green}[+]$reset${yellow} Adding extra permuted subdomains and resolve with puredns to retrieve only valid domains...${reset}"
-        gotator -sub "$BASE_DIR/all_subdomains.txt" -perm /usr/share/SecLists/Discovery/DNS/subdomains-top1million-20000.txt -depth 1 -numbers 10 -mindup -adv -md -silent > "$BASE_DIR/subdomains_to_resolve.txt" \
+        gotator -sub "$BASE_DIR/all_subdomains.txt" -perm /usr/share/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -depth 1 -numbers 10 -mindup -adv -md -silent > "$BASE_DIR/subdomains_to_resolve.txt" \
             && puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" -r "$HOME/dns-resolvers/resolvers.txt" --write "$BASE_DIR/valid_alt_domains.txt"
         
         fetchDomainData "$domain" "$BASE_DIR" 1>/dev/null &
