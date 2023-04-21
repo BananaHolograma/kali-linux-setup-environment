@@ -421,19 +421,13 @@ runEnumeration() {
         local BASE_DIR="$HOME/Hunts/$domain/recon"
 
         echo -e "${green}[+]$reset ${yellow}Initial enumeration started for domain $domain${reset}\n"
-
-        echo -e "${green}[+]$reset ${yellow}DNS lookup on $domain${reset}\n"
-        dnsrecon -a -d "$domain" > "$BASE_DIR/dns.txt"
-        dig @1.1.1.1 "$domain" >> "$BASE_DIR/dns.txt"
-        whois -h whois.radb.net $(dig +short "$domain" | head -1) >> "$BASE_DIR/whois.txt"
-        
         crt -o "$BASE_DIR" $domain
 
         echo -e "${green}[+]$reset ${yellow}Running amass basic enumeration, be patient...${reset}\n"
         amass enum --passive -d $domain -o "$BASE_DIR/amass_subdomains.txt"
 
         echo -e "${green}[+]$reset ${yellow}Running subfinder passive enumeration${reset}\n"
-        subfinder -d $domain --silent -nW -o "$BASE_DIR/subfinder_subdomains.txt"
+        subfinder -d $domain -sources "alientvault,anubis,commoncrawl,digitorus,dnsdumpster,hackertarget,rapiddns,riddler,waybackarchive" -silent -nW -o "$BASE_DIR/subfinder_subdomains.txt"
        
         # Make grepable the TLD termination like .com, .es .org, etc
         regex_domain=$(echo $domain | sed 's/\./\\./g')
@@ -451,9 +445,15 @@ runEnumeration() {
         echo -e "${green}[+]$reset ${yellow}Retrieving ASN numbers for the given subdomains${reset}"
         cat "$BASE_DIR/all_subdomains.txt" | dnsx -silent -asn -o "$BASE_DIR/asn.txt"
 
+        echo -e "${green}[+]$reset ${yellow}DNS lookup on $domain${reset}\n"
+        dnsrecon -a -d "$domain" > "$BASE_DIR/dns.txt"
+        dig @1.1.1.1 "$domain" >> "$BASE_DIR/dns.txt"
+        whois -h whois.radb.net $(dig +short "$domain" | head -1) > "$BASE_DIR/whois.txt"
+        cat "$BASE_DIR/all_subdomains.txt" | xargs -P4 -I {} host {} >> "$BASE_DIR/hosts.txt"  
+       
         echo -e "${green}[+]$reset${yellow} Adding extra permuted subdomains and resolve with puredns to retrieve only valid domains...${reset}"
         gotator -sub "$BASE_DIR/all_subdomains.txt" -perm /usr/share/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -depth 1 -numbers 10 -mindup -adv -md -silent > "$BASE_DIR/subdomains_to_resolve.txt" \
-            && puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" -r "$HOME/dns-resolvers/resolvers.txt" --write "$BASE_DIR/valid_alt_domains.txt"
+            && puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" -r "$HOME/dns-resolvers/clean_resolvers.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" --write "$BASE_DIR/valid_alt_domains.txt"
         
         fetchDomainData "$domain" "$BASE_DIR" 1>/dev/null &
 
