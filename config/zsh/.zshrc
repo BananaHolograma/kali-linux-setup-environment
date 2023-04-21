@@ -403,7 +403,7 @@ fetchDomainData() {
 
     if [[ -f "$BASE_DIR/urls.txt" ]]; then 
         echo -e "${green}[+]$reset ${yellow}Running httpx tool on gathered urls from domain $DOMAIN${reset}\n"
-        grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | sort -u | httpx -sc -ip -fr -o "$BASE_DIR/http_probe"
+        grep -Ei "$regex_domain" "$BASE_DIR/urls.txt" | sort -u | httpx -favicon -title -method -sc -ip -fr -o "$BASE_DIR/http_probe"
     
         echo -e "${green}[+]$reset ${yellow}Gathering extra urls and js files with hakrawler on domain $DOMAIN${reset}\n"
         cat "$BASE_DIR/http_probe" | awk '{print $1}' | sort -u | hakrawler -t 20 -proxy http://127.0.0.1:9050 -timeout 5 >> "$BASE_DIR/urls.txt"
