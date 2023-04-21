@@ -453,11 +453,11 @@ runEnumeration() {
        
         echo -e "${green}[+]$reset${yellow} Adding extra permuted subdomains and resolve with puredns to retrieve only valid domains...${reset}"
         gotator -sub "$BASE_DIR/all_subdomains.txt" -perm /usr/share/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -depth 1 -numbers 10 -mindup -adv -md -silent > "$BASE_DIR/subdomains_to_resolve.txt" \
-            && puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" -r "$HOME/dns-resolvers/clean_resolvers.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" --write "$BASE_DIR/valid_alt_domains.txt"
+            && puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" -r "$HOME/dns-resolvers/resolvers.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" --write "$BASE_DIR/valid_subdomains.txt"
         
         fetchDomainData "$domain" "$BASE_DIR" 1>/dev/null &
 
-        cat "$BASE_DIR/valid_alt_domains.txt" | xargs -P4 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN"'  
+        cat "$BASE_DIR/valid_subdomains.txt" 2>/dev/null || cat "$BASE_DIR/all_subdomains.txt" | xargs -P10 -I {} zsh -c '. "$HOME/.zshrc"; DOMAIN="{}"; eval "$(typeset -f fetchDomainData)"; fetchDomainData "$DOMAIN"'  
    
         end_time=$(date +%s.%N)
         elapsed_time=$(echo "$end_time - $start_time" | bc)
