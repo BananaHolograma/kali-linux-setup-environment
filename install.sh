@@ -79,7 +79,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update
 
-    sudo apt upgrade -y && sudo apt install -y git curl wget vim net-tools iputils-ping tldr docker.io docker-compose rsync tee parallel
+    sudo apt upgrade -y && sudo apt install -y net-tools iputils-ping cifs-utils tldr awscli docker.io docker-compose rsync tee parallel mongodb-clients freerdp2-x11
 }
 
 function setupCustomTerminalFont() {
@@ -177,6 +177,8 @@ function setupInfoSecTools() {
     sudo apt remove python3-httpx subfinder && sudo apt autoremove --purge
     sudo apt install -y firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
 
+    git clone https://github.com/lgandx/Responder 
+    
     if [[ ! -d "/usr/share/SecLists" ]]; then 
         wget -c -nc https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
             && sudo unzip -oq SecList.zip -d "/usr/share/" \
@@ -216,10 +218,8 @@ function setupInfoSecTools() {
 
                 git clone https://github.com/vortexau/dnsvalidator.git \
                     && cd dns-validator && python setup.py install && cd ..
-            fi
-
-     
-        fi 
+            fi     
+        fi
 
     fi
 }
