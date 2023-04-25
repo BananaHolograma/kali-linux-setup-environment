@@ -213,11 +213,8 @@ function setupInfoSecTools() {
             go install github.com/d3mondev/puredns/v2@latest
 
             if [[ ! -d "$HOME_DIR/dns-resolvers" ]]; then 
-                wget -c -nc https://github.com/trickest/resolvers/archive/refs/heads/main.zip \
-                    && unzip main.zip && mv resolvers-main "$HOME_DIR/dns-resolvers" && rm main.zip
-
-                git clone https://github.com/vortexau/dnsvalidator.git \
-                    && cd dns-validator && python setup.py install && cd ..
+                mkdir -p "$HOME_DIR/dns-resolvers" \ 
+                    && cp "$CURRENT_DIR/dns-resolvers/{resolvers-trusted,resolvers}.txt" "$HOME_DIR/dns-resolvers"
             fi     
         fi
 
