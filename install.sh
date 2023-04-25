@@ -175,9 +175,7 @@ function setupNVM() {
 
 function setupInfoSecTools() {
     sudo apt remove python3-httpx subfinder && sudo apt autoremove --purge
-    sudo apt install -y firejail python3 python3-pip tor sqlmap dnsrecon wafw00f whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
-
-    git clone https://github.com/lgandx/Responder 
+    sudo apt install -y firejail python3 python3-pip tor sqlmap dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb
     
     if [[ ! -d "/usr/share/SecLists" ]]; then 
         wget -c -nc https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
