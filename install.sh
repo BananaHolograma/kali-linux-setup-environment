@@ -229,8 +229,8 @@ function setupTerminalUtils() {
 function setupScripts() {
         echo -e "${grayColour}[ TERMINAL UTILS ]$endColour ${yellowColour}Copying custom scripts into$endColour ${cyanColour}$HOME_DIR/scripts..$endColour"
 
-        mkdir -p "$HOME_DIR/scripts" \ 
-            && cp -r "$CURRENT_DIR/scripts" "$HOME_DIR/scripts"
+        mkdir -p "$HOME_DIR/scripts" \
+            && cp -rf "$CURRENT_DIR/scripts" "$HOME_DIR/scripts"
 }
 
 ###
