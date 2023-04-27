@@ -466,7 +466,7 @@ runEnumeration() {
         echo -e "${green}[+]$reset${yellow} Adding extra permuted subdomains and resolve with puredns to retrieve only valid domains...${reset}"
         gotator -sub "$BASE_DIR/all_subdomains.txt" -perm /usr/share/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -depth 1 -numbers 10 -mindup -adv -md -silent > "$BASE_DIR/subdomains_to_resolve.txt"
 
-        if [[ -f "$BASE_DIR/subdomains_to_resolve.txt" ]]; then 
+        if [[ -f "$BASE_DIR/subdomains_to_resolve.txt" ]]; then
             puredns resolve "$BASE_DIR/subdomains_to_resolve.txt" -r "$HOME/dns-resolvers/resolvers.txt" --resolvers-trusted "$HOME/dns-resolvers/resolvers-trusted.txt" --write "$BASE_DIR/valid_subdomains.txt"
         fi 
         
