@@ -79,7 +79,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update
 
-    sudo apt upgrade -y && sudo apt install -y net-tools iputils-ping cifs-utils tldr awscli docker.io docker-compose rsync tee parallel mongodb-clients freerdp2-x11
+    sudo apt upgrade -y && sudo apt install -y net-tools iputils-ping cifs-utils tldr awscli docker.io docker-compose rsync parallel mongodb-clients freerdp2-x11
 }
 
 function setupCustomTerminalFont() {
