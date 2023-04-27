@@ -211,7 +211,7 @@ function setupInfoSecTools() {
             go install github.com/d3mondev/puredns/v2@latest
 
             if [[ ! -d "$HOME_DIR/dns-resolvers" ]]; then 
-                mkdir -p "$HOME_DIR/dns-resolvers" \ 
+                mkdir -p "$HOME_DIR/dns-resolvers" \
                     && cp "$CURRENT_DIR/dns-resolvers/{resolvers-trusted,resolvers}.txt" "$HOME_DIR/dns-resolvers"
             fi     
         fi
