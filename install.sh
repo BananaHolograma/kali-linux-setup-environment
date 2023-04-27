@@ -175,7 +175,7 @@ function setupNVM() {
 
 function setupInfoSecTools() {
     sudo apt remove python3-httpx subfinder && sudo apt autoremove --purge
-    sudo apt install -y firejail python3 python3-pip xxd tor sqlmap dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
+    sudo apt install -y firejail python3 python3-pip xxd ghidra tor sqlmap dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
     
     if [[ ! -d "/usr/share/SecLists" ]]; then 
         wget -c -nc https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
@@ -220,10 +220,17 @@ function setupInfoSecTools() {
 }
 
 function setupTerminalUtils() {
-    echo -e "${grayColour}[ TERMINAL UTILS ]$endColour Installing and configuring terminal utils...$endColour"
+    echo -e "${grayColour}[ TERMINAL UTILS ]$endColour ${yellowColour}Installing and configuring terminal utils...$endColour"
     
     sudo apt install -y bat fzf lsd bash-completion \
         && mkdir -p ~/.local/bin && ln -sf /usr/bin/batcat ~/.local/bin/bat
+}
+
+function setupScripts() {
+        echo -e "${grayColour}[ TERMINAL UTILS ]$endColour ${yellowColour}Copying custom scripts into$endColour ${cyanColour}$HOME_DIR/scripts..$endColour"
+
+        mkdir -p "$HOME_DIR/scripts" \ 
+            && cp -r "$CURRENT_DIR/scripts" "$HOME_DIR/scripts"
 }
 
 ###
@@ -235,6 +242,7 @@ setupAndConfigureKitty
 setupVim
 setupZSH
 setupTerminalUtils
+setupScripts
 setupInfoSecTools
 setupNVM
 

@@ -276,6 +276,13 @@ export _JAVA_AWT_WM_NONREPARENTING=1¡
 [ -d "$ZSH/plugins/zsh-autosuggestions" ] && source "$ZSH/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 [ -d "$ZSH/plugins/zsh-syntax-highlighting" ] && source "$ZSH/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
+export CHROME_DESKTOP_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
+export EDGE_DESKTOP_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Edg/110.0.1587.69"
+export FIREFOX_DESKTOP_AGENT="Mozilla/5.0 (Windows NT 10.0; rv:111.0) Gecko/20100101 Firefox/111.0"
+export ANDROID_MOBILE_AGENT="Mozilla/5.0 (Linux; Android 11; SM-A507FN) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Mobile Safari/537.36"
+export IPHONE_MOBILE_AGENT="Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) GSA/258.1.520699392 Mobile/15E148 Safari/604.1"
+export GOOGLE_BOT_DESKTOP_AGENT="Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Chrome/W.X.Y.Z Safari/537.36"
+
 # Custom Aliases
 alias cat='batcat'
 alias catn="/usr/bin/cat"
@@ -287,6 +294,11 @@ alias lla='lsd -lha --group-dirs=first'
 alias ls='lsd --group-dirs=first'
 
 alias kssh='kitty +kitten ssh'
+
+alias nmap='nmap --script-args http.useragent="$CHROME_DESKTOP_AGENT"'
+alias wpscan='wpscan --ua $FIREFOX_DESKTOP_AGENT'
+alias curl='-A $EDGE_DESKTOP_AGENT'
+alias wget='-U $ANDROID_MOBILE_AGENT'
 
 bindkey "^[[H" beginning-of-line
 bindkey "^[[F" end-of-line
