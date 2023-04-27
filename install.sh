@@ -212,7 +212,7 @@ function setupInfoSecTools() {
 
             if [[ ! -d "$HOME_DIR/dns-resolvers" ]]; then 
                 mkdir -p "$HOME_DIR/dns-resolvers" \
-                    && cp "$CURRENT_DIR/dns-resolvers/{resolvers-trusted,resolvers}.txt" "$HOME_DIR/dns-resolvers"
+                    && cp "$CURRENT_DIR"/dns-resolvers/{resolvers-trusted,resolvers}.txt "$HOME_DIR"/dns-resolvers
             fi     
         fi
 
@@ -244,7 +244,7 @@ setupZSH
 setupTerminalUtils
 setupScripts
 setupInfoSecTools
-setupNVM
+#setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
 sudo cp -rf "$HOME_DIR"/.config "$ROOT_DIR"
