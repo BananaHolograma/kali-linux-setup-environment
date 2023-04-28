@@ -59,6 +59,14 @@ setopt hist_verify            # show command with history expansion to user befo
 # force zsh to show the complete history
 alias history="history 0"
 
+function erase_history { local HISTSIZE=0; }
+
+function zshaddhistory_erase_history {
+  [[ $1 != [[:space:]]#erase_history[[:space:]]# ]]
+}
+zshaddhistory_functions+=(zshaddhistory_erase_history)
+
+
 # configure `time` format
 TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S\ncpu\t%P'
 
