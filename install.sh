@@ -189,11 +189,16 @@ function setupInfoSecTools() {
         sudo gunzip /usr/share/wordlists/rockyou.txt.gz
     fi 
 
-    wget --output-document crt https://raw.githubusercontent.com/s3r0s4pi3ns/crt/main/crt.sh \
-        && chmod +x crt && sudo mv crt /usr/local/bin/
+    libraries=(crt randomipzer ipharvest) 
+    for library in "${libraries[@]}"
+    do 
+        wget --output-document "$library" https://raw.githubusercontent.com/s3r0s4pi3ns/"$library"/main/"$library".sh \
+            && chmod +x "$library" && sudo mv "$library" /usr/local/bin/
+    done 
    
-    wget --output-document randomipzer https://raw.githubusercontent.com/s3r0s4pi3ns/randomipzer/main/randomipzer.sh \
-        && chmod +x randomipzer && sudo mv randomipzer /usr/local/bin/
+    git clone https://github.com/s3r0s4pi3ns/xmlrpcpwn.git
+    python xmlrpcpwn/setup.py install
+    rm -rf xmlrpcpwn
 
     # GO binary path is exported on .zshrc
     if command_exists 'go'; then 
