@@ -303,7 +303,7 @@ alias ls='lsd --group-dirs=first'
 
 alias kssh='kitty +kitten ssh'
 
-alias nmap='nmap --script-args http.useragent="$CHROME_DESKTOP_AGENT"'
+alias nmap='grc nmap --script-args http.useragent="$CHROME_DESKTOP_AGENT"'
 alias wpscan='wpscan --ua $FIREFOX_DESKTOP_AGENT'
 alias curl='-A $EDGE_DESKTOP_AGENT'
 alias wget='-U $ANDROID_MOBILE_AGENT'
