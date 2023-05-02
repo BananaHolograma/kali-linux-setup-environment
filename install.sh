@@ -198,7 +198,7 @@ function setupInfoSecTools() {
    
     if [[ ! -d "$HOME_DIR/xmlrpcpwn" ]]; then 
         git clone https://github.com/s3r0s4pi3ns/xmlrpcpwn.git
-        cd xmlrpcpwn && python setup.py install
+        cd xmlrpcpwn && python setup.py install --user
         cd ..
         rm -rf xmlrpcpwn
     fi
