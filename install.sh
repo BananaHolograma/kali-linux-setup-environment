@@ -196,9 +196,12 @@ function setupInfoSecTools() {
             && chmod +x "$library" && sudo mv "$library" /usr/local/bin/
     done 
    
-    git clone https://github.com/s3r0s4pi3ns/xmlrpcpwn.git
-    python xmlrpcpwn/setup.py install
-    rm -rf xmlrpcpwn
+    if [[ ! -d "$HOME_DIR/xmlrpcpwn" ]]; then 
+        git clone https://github.com/s3r0s4pi3ns/xmlrpcpwn.git
+        cd xmlrpcpwn && python setup.py install
+        cd ..
+        rm -rf xmlrpcpwn
+    fi
 
     # GO binary path is exported on .zshrc
     if command_exists 'go'; then 
