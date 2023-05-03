@@ -304,9 +304,9 @@ alias ls='lsd --group-dirs=first'
 alias kssh='kitty +kitten ssh'
 
 alias nmap='grc nmap --script-args http.useragent="$CHROME_DESKTOP_AGENT"'
-alias wpscan="grc wpscan --ua $FIREFOX_DESKTOP_AGENT"
-alias curl="curl -A $EDGE_DESKTOP_AGENT"
-alias wget="wget -U $ANDROID_MOBILE_AGENT"
+alias wpscan='grc wpscan --ua "$FIREFOX_DESKTOP_AGENT"'
+alias curl='curl -A "$EDGE_DESKTOP_AGENT"'
+alias wget='wget -U "$ANDROID_MOBILE_AGENT"'
 
 bindkey "^[[H" beginning-of-line
 bindkey "^[[F" end-of-line
