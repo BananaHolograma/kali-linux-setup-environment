@@ -174,6 +174,7 @@ function setupNVM() {
 }
 
 function setupInfoSecTools() {
+    python3 -m pip install termcolor cprint pycryptodomex requests
     sudo apt remove python3-httpx subfinder && sudo apt autoremove --purge
     sudo apt install -y firejail python3 python3-pip xxd ghidra tor sqlmap dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
     
@@ -202,6 +203,11 @@ function setupInfoSecTools() {
         cd ..
         rm -rf xmlrpcpwn
     fi
+
+    if [[ ! -d "$HOME_DIR/jwt_tool" ]]; then 
+        git clone https://github.com/ticarpi/jwt_tool
+        sudo ln -sf "$HOME_DIR"/jwt_tool/jwt_tool.py /usr/local/bin/jwt_tool
+    fi 
 
     # GO binary path is exported on .zshrc
     if command_exists 'go'; then 
