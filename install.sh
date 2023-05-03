@@ -206,6 +206,7 @@ function setupInfoSecTools() {
 
     if [[ ! -d "$HOME_DIR/jwt_tool" ]]; then 
         git clone https://github.com/ticarpi/jwt_tool
+        chmod +x "$HOME_DIR"/jwt_tool/jwt_tool.py
         sudo ln -sf "$HOME_DIR"/jwt_tool/jwt_tool.py /usr/local/bin/jwt_tool
     fi 
 
