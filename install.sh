@@ -193,13 +193,12 @@ function setupInfoSecTools() {
         rm -rf xmlrpcpwn
     fi
 
-    if [[ ! -d "$HOME_DIR"/jwt_tool ]]; then 
-        JWT_TOOL_DIR="$HOME_DIR"/jwt_tool/jwt_tool.py
-        python3 -m ensurepip --upgrade; python3 -m pip install termcolor cprint pycryptodomex requests
+    if [[ ! -d "$HOME_DIR"/jwt_sec_tool ]]; then 
+        JWT_TOOL_DIR="$HOME_DIR"/jwt_sec_tool/jwt_tool.py
+        python3 -m pip install termcolor cprint pycryptodomex requests
 
-        git clone https://github.com/ticarpi/jwt_tool
-        chmod +x "$JWT_TOOL_DIR"
-        sudo ln -sf "$JWT_TOOL_DIR" /usr/local/bin/jwt_tool
+        git clone https://github.com/ticarpi/jwt_tool jwt_sec_tool
+        chmod +x "$JWT_TOOL_DIR" && cp "$JWT_TOOL_DIR" /usr/local/bin/jwt_tool
     fi 
 
     # GO binary path is exported on .zshrc
