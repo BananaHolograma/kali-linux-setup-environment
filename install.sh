@@ -122,7 +122,7 @@ function setupVim() {
         cp "$HOME_DIR"/.vimrc "$config_backup_folder"
     fi
 
-    [[ -f "$VIM_CONFIG_DIR/.vimrc" ]] && cp "$VIM_CONFIG_DIR/.vimrc" "$HOME_DIR"
+    [[ -f "$VIM_CONFIG_DIR/.vimrc" ]] && cp -f "$VIM_CONFIG_DIR/.vimrc" "$HOME_DIR"
 
     echo -e "${grayColour}[ VIM ]$endColour$yellowColour Created$endColour$cyanColour .vimrc$endColour$yellowColour file on $HOME_DIR directory$endColour"
 }
@@ -169,7 +169,11 @@ function setupInfoSecTools() {
             && sudo mv /usr/share/SecLists-master /usr/share/SecLists \
             && sudo rm -f SecList.zip
     fi 
-
+    
+    if [[ ! -d "/usr/share/wordlists"]]; then 
+        sudo apt install wordlists
+    fi 
+    
     if [[ ! -f "/usr/share/wordlists/rockyou.txt" ]]; then
         echo -e "${grayColour}[ WORDLISTS ]$endColour$yellowColour Extracting rockyou.txt.gz ... $endColour"
         sudo gunzip /usr/share/wordlists/rockyou.txt.gz
@@ -181,10 +185,10 @@ function setupInfoSecTools() {
         wget --output-document "$library" https://raw.githubusercontent.com/s3r0s4pi3ns/"$library"/main/"$library".sh \
             && chmod +x "$library" && sudo mv "$library" /usr/local/bin/
     done 
-   
+    
     if [[ ! -d "$HOME_DIR"/xmlrpcpwn ]]; then 
         git clone https://github.com/s3r0s4pi3ns/xmlrpcpwn.git
-        cd xmlrpcpwn && python setup.py install --user
+        cd xmlrpcpwn && python3 setup.py install --user
         cd ..
         rm -rf xmlrpcpwn
     fi
