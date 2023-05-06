@@ -292,6 +292,7 @@ export IPHONE_MOBILE_AGENT="Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS 
 export GOOGLE_BOT_DESKTOP_AGENT="Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Chrome/W.X.Y.Z Safari/537.36"
 
 # Custom Aliases
+alias python=/usr/bin/python3
 alias cat='batcat'
 alias catn="/usr/bin/cat"
 

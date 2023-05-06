@@ -159,22 +159,7 @@ function setupZSH() {
     source "$HOME_DIR/.zshrc"
 }
 
-function setupNVM() {
-    if command_exists 'nvm'; then 
-        echo -e "${grayColour}[ NVM ]$endColour$yellowColour NVM (Node Version Manager) is already installed, skipping...$endColour"
-    else 
-        echo -e "${grayColour}[ NVM ]$endColour$yellowColour Installing NVM (Node Version Manager) and set as default the LTS version$endColour"
-
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-        
-        source "$HOME_DIR/.zshrc"
-
-        nvm install --lts && nvm use --lts
-    fi
-}
-
 function setupInfoSecTools() {
-    python3 -m pip install termcolor cprint pycryptodomex requests
     sudo apt remove python3-httpx subfinder && sudo apt autoremove --purge
     sudo apt install -y firejail python3 python3-pip xxd ghidra tor sqlmap dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
     
@@ -197,17 +182,20 @@ function setupInfoSecTools() {
             && chmod +x "$library" && sudo mv "$library" /usr/local/bin/
     done 
    
-    if [[ ! -d "$HOME_DIR/xmlrpcpwn" ]]; then 
+    if [[ ! -d "$HOME_DIR"/xmlrpcpwn ]]; then 
         git clone https://github.com/s3r0s4pi3ns/xmlrpcpwn.git
         cd xmlrpcpwn && python setup.py install --user
         cd ..
         rm -rf xmlrpcpwn
     fi
 
-    if [[ ! -d "$HOME_DIR/jwt_tool" ]]; then 
+    if [[ ! -d "$HOME_DIR"/jwt_tool ]]; then 
+        JWT_TOOL_DIR="$HOME_DIR"/jwt_tool/jwt_tool.py
+        python3 -m ensurepip --upgrade; python3 -m pip install termcolor cprint pycryptodomex requests
+
         git clone https://github.com/ticarpi/jwt_tool
-        chmod +x "$HOME_DIR"/jwt_tool/jwt_tool.py
-        sudo ln -sf "$HOME_DIR"/jwt_tool/jwt_tool.py /usr/local/bin/jwt_tool
+        chmod +x "$JWT_TOOL_DIR"
+        sudo ln -sf "$JWT_TOOL_DIR" /usr/local/bin/jwt_tool
     fi 
 
     # GO binary path is exported on .zshrc
@@ -259,7 +247,6 @@ setupZSH
 setupTerminalUtils
 setupScripts
 setupInfoSecTools
-#setupNVM
 
 # Copy the entire configuration to root home folder in order to have same configuration
 sudo cp -rf "$HOME_DIR"/.config "$ROOT_DIR"
