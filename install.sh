@@ -54,7 +54,9 @@ while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; d
 
     while [[ -z $SUDO_PASSWORD ]]; do 
         echo -n "Write the sudo password for your user $SELECTED_USER to install packages with privileges: " 
-        read -rs SUDO_PASSWORD
+        read -s SUDO_PASSWORD
+        printf "\n"
+
     done 
 done
 
@@ -74,10 +76,10 @@ function stepNeedInstallation() {
 
     if [[ ! -f "$tmp_folder/$step" ]]; then 
         touch "$tmp_folder/$step"
-        return 1
-    else 
-        echo -e "${greenColour}[ INSTALLED ]$endColour${yellowColour} The step $step is already installed and configured, skipping...$endColour"
         return 0
+    else 
+        echo -e "${greenColour}[ INSTALLED ]$endColour${yellowColour} The step$endColour${greenColour} $step${endColour}${yellowColour} is already installed and configured, skipping...$endColour"
+        return 1
     fi 
 
 }
@@ -93,7 +95,7 @@ function prepareEnvironmentForTheInstallation() {
     echo -e "${cyanColour}[ PREPARATION ]$endColour$yellowColour Installing and updating packages that are needed in the system to continue the process...$endColour"
     
     # We only need to provide the sudo password one time at the start of the script
-    echo "$SUDO_PASSWORD" | sudo -S apt update
+    echo "$SUDO_PASSWORD" | sudo -S apt update -yqq
 
     sudo apt upgrade -yqq && sudo apt install -yqq -o=Dpkg::Use-Pty=0  grc jq net-tools iputils-ping socat cifs-utils tldr awscli docker.io docker-compose rsync parallel mongodb-clients freerdp2-x11
 
@@ -132,7 +134,7 @@ function setupVim() {
     echo -e "${cyanColour}[ VIM ]$endColour Installing and configuring VIM editor with basic initial configuration"
     local VIM_CONFIG_DIR="$CURRENT_DIR/config/vim"
     
-    sudo apt install --yqq -o=Dpkg::Use-Pty=0 vim
+    sudo apt install -yqq -o=Dpkg::Use-Pty=0 vim
 
     if [ -f "$HOME_DIR"/.vimrc ]; then
         echo -e "${grayColour}[ VIM ]$endColour$yellowColour Detected existing .vimrc file, creating backup on$endColour$cyanColour $CONFIG_BACKUP_FOLDER"
@@ -149,7 +151,7 @@ function setupZSH() {
 
     local ZSH_CONFIG_DIR="$HOME_DIR/.config/zsh"
 
-    sudo apt install ---yqq -o=Dpkg::Use-Pty=0 zsh
+    sudo apt install -yqq -o=Dpkg::Use-Pty=0 zsh
 
     if [ -f "$HOME_DIR"/.zshrc ]; then
         echo -e "${grayColour}[ ZSH ]$endColour$yellowColour Detected existing .zshrc file, creating backup on$endColour$cyanColour $CONFIG_BACKUP_FOLDER"
@@ -180,7 +182,7 @@ function setupInfoSecTools() {
     echo -e "${cyanColour}[ INFOSEC TOOLS ]$endColour${yellowColour} Installing infosec tools...$endColour"
    
     sudo apt remove python3-httpx subfinder && sudo apt autoremove --purge
-    sudo apt install ---yqq -o=Dpkg::Use-Pty=0 firejail python3 python3-pip xxd ghidra tor sqlmap dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
+    sudo apt install -yqq -o=Dpkg::Use-Pty=0 firejail python3 python3-pip xxd ghidra tor sqlmap dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
     
     if [[ ! -d "/usr/share/SecLists" ]]; then 
         wget -c -nc https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
@@ -267,14 +269,14 @@ function setupScripts() {
 ###
 # START THE INSTALLATION AND CONFIGURATION PROCESS FOR THE NEW ENVIRONMENT
 ###
-stepNeedInstallation "PREPARE_ENVIRONMENT" && prepareEnvironmentForTheInstallation
-stepNeedInstallation "TERMINAL_FONT" && setupCustomTerminalFont
+stepNeedInstallation "PREPARE_ENVIRONMENT" -eq 0 && prepareEnvironmentForTheInstallation
+setupCustomTerminalFont
 stepNeedInstallation "KITTY_GPU_TERMINAL" && setupAndConfigureKitty
-stepNeedInstallation "VIM" && setupVim
-stepNeedInstallation "ZSH" && setupZSH
-stepNeedInstallation "TERMINAL_UTILS" && setupTerminalUtils
-stepNeedInstallation "CUSTOM_SCRIPTS" && setupScripts
-stepNeedInstallation "INFOSEC_TOOLS" && setupInfoSecTools
+stepNeedInstallation "VIM" -eq 0 && setupVim
+stepNeedInstallation "ZSH" -eq 0 && setupZSH
+stepNeedInstallation "TERMINAL_UTILS" -eq 0 && setupTerminalUtils
+stepNeedInstallation "CUSTOM_SCRIPTS" -eq 0 && setupScripts
+stepNeedInstallation "INFOSEC_TOOLS" -eq 0 && setupInfoSecTools
 
 # Copy the entire configuration to root home folder in order to have same configuration
 sudo cp -rf "$HOME_DIR"/.config "$ROOT_DIR"
