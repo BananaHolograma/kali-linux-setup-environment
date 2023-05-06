@@ -191,7 +191,7 @@ function setupInfoSecTools() {
     
     echo -e "${cyanColour}[ INFOSEC TOOLS ]$endColour${yellowColour} Preparing wordlists...$endColour"
 
-    if [[ ! -d "/usr/share/wordlists"]]; then 
+    if [[ ! -d "/usr/share/wordlists" ]]; then 
         sudo apt install wordlists
     fi 
     
