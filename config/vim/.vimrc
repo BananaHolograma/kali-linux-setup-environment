@@ -1,4 +1,4 @@
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim' 
 
 if empty(glob(data_dir . '/autoload/plug.vim'))
       silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
@@ -26,7 +26,12 @@ nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
-colorscheme torte 
+hi Normal ctermbg=NONE
+hi NonText ctermbg=NONE
+hi SignColumn ctermbg=NONE
+hi LineNr ctermbg=NONE
+hi VertSplit ctermbg=NONE
+hi Folded ctermbg=NONE
 
 if exists("&smoothscroll")
     set smoothscroll
@@ -105,3 +110,5 @@ set splitright                  " put new splits on the right please
 let g:pear_tree_smart_closers = 1
 let g:NERDTreeWinPos = "right"
 let g:mucomplete#enable_auto_at_startup = 1
+
+
