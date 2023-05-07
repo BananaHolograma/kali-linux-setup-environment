@@ -329,6 +329,16 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 
 export PATH="$HOME/go/bin/:$PATH"
 
+# ASCII TO CHARACTER
+chr() {
+    [ "$1" -lt 256 ] || return 1
+    printf "\\$(printf '%03o' "$1")"
+} 
+# CHARACTER TO ASCII
+ord() {
+    LC_CTYPE=C printf '%d' "'$1"
+}
+
 ##( Colors
 #
 #( fg

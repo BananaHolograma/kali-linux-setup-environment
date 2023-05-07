@@ -160,6 +160,7 @@ function setupZSH() {
 
     mkdir -p "$ZSH_CONFIG_DIR/plugins" 
     touch "$HOME_DIR/.zsh_history"
+    cp -f "$CURRENT_DIR/config/zsh/.zshenv" "$HOME_DIR/.zshenv"
 
     if ! grep -i "go/bin" "$HOME_DIR/.zshrc"; then 
         cat "$CURRENT_DIR/config/zsh/.zshrc" > "$HOME_DIR/.zshrc" 
@@ -182,7 +183,7 @@ function setupInfoSecTools() {
     echo -e "${cyanColour}[ INFOSEC TOOLS ]$endColour${yellowColour} Installing infosec tools...$endColour"
    
     sudo apt remove python3-httpx subfinder && sudo apt autoremove --purge
-    sudo apt install -yqq -o=Dpkg::Use-Pty=0 firejail python3 python3-pip xxd ghidra tor sqlmap dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
+    sudo apt install -yqq -o=Dpkg::Use-Pty=0 firejail python3 python3-pip xxd ghidra tor sqlmap hashrat hashcat dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
     
     if [[ ! -d "/usr/share/SecLists" ]]; then 
         wget -c -nc https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
