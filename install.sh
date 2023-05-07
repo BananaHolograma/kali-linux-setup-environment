@@ -263,7 +263,7 @@ function setupScripts() {
         echo -e "${cyanColour}[ CUSTOM SCRIPTS ]$endColour ${yellowColour}Copying custom scripts into$endColour ${cyanColour}$HOME_DIR/scripts..$endColour"
 
         mkdir -p "$HOME_DIR/scripts" \
-            && cp -rf "$CURRENT_DIR/scripts" "$HOME_DIR/scripts"
+            && cp -rf "$CURRENT_DIR/scripts" "$HOME_DIR"
 }
 
 ###
