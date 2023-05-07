@@ -7,6 +7,7 @@ endif
 
 call plug#begin('~/.vim/plugins')
 
+Plug 'davidhalter/jedi-vim'
 Plug 'lifepillar/vim-mucomplete'
 Plug 'sheerun/vim-polyglot'
 Plug 'LunarWatcher/auto-pairs'
@@ -32,6 +33,7 @@ hi SignColumn ctermbg=NONE
 hi LineNr ctermbg=NONE
 hi VertSplit ctermbg=NONE
 hi Folded ctermbg=NONE
+hi Visual cterm=NONE ctermbg=0 ctermfg=NONE guibg=Grey40
 
 if exists("&smoothscroll")
     set smoothscroll
@@ -41,7 +43,8 @@ if $COLORSCHEME == 'gnome-terminal'
     set t_Co=256
 endif
 
-set completeopt+=menuone,noselect
+set complete-=preview
+set completeopt+=longest,menuone,noselect
 set shortmess+=c
 
 set nocompatible
@@ -110,5 +113,4 @@ set splitright                  " put new splits on the right please
 let g:pear_tree_smart_closers = 1
 let g:NERDTreeWinPos = "right"
 let g:mucomplete#enable_auto_at_startup = 1
-
-
+let g:jedi#popup_on_dot = 0
