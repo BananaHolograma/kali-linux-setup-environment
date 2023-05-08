@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+### Example
+# openvpn --script-security 2 --down "$HOME/scripts/vpn-down.sh" --config <openvpn file>
+###
+
 echo "[-] Disabling network interfaces..."
 systemctl stop network-manager
 killall -9 dhclient
