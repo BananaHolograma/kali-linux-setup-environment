@@ -97,7 +97,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update -yqq
 
-    udo apt upgrade -yqq && sudo apt install -yqq -o=Dpkg::Use-Pty=0  grc xclip imagemagick ent exiftool jq net-tools ipcalc iputils-ping socat cifs-utils tldr sqlite3 sqlitebrowser awscli docker.io docker-compose rsync parallel mongodb-clients freerdp2-x11
+    sudo apt upgrade -yqq && sudo apt install -yqq -o=Dpkg::Use-Pty=0  grc xclip imagemagick ent exiftool jq net-tools ipcalc iputils-ping socat cifs-utils tldr sqlite3 sqlitebrowser awscli docker.io docker-compose rsync parallel mongodb-clients freerdp2-x11
 
 }
 
