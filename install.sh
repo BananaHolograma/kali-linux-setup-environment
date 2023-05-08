@@ -144,6 +144,7 @@ function setupVim() {
     [[ -f "$VIM_CONFIG_DIR/.vimrc" ]] && cp -f "$VIM_CONFIG_DIR/.vimrc" "$HOME_DIR"
 
     echo -e "${cyanColour}[ VIM ]$endColour$yellowColour Created$endColour$cyanColour .vimrc$endColour$yellowColour file on $HOME_DIR directory$endColour"
+    echo -e "${cyanColour}[ VIM ]$endColour$yellowColour You can check the features availables with command$endColour$cyanColour vim --version$endColour$yellowColour file on $HOME_DIR directory$endColour"
 }
 
 function setupZSH() {
