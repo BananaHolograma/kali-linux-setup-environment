@@ -27,6 +27,12 @@ nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
+" Move between NerdTree splits
+nmap <silent> <c-k> :wincmd k<CR>
+nmap <silent> <c-j> :wincmd j<CR>
+nmap <silent> <c-h> :wincmd h<CR>
+nmap <silent> <c-l> :wincmd l<CR>
+
 hi Normal ctermbg=NONE
 hi NonText ctermbg=NONE
 hi SignColumn ctermbg=NONE
@@ -44,11 +50,12 @@ if $COLORSCHEME == 'gnome-terminal'
 endif
 
 set complete-=preview
-set completeopt+=longest,menuone,noselect
+set completeopt+=menuone,noselect
 set shortmess+=c
 
 set nocompatible
 
+set tabpagemax=10
 set history=500
 set ruler
 set cmdheight=2
