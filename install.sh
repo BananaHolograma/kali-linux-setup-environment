@@ -53,8 +53,7 @@ while ! user_exists "$SELECTED_USER" && [ "$create_non_existing_user" = 'n' ]; d
 
 
     while [[ -z $SUDO_PASSWORD ]]; do 
-        echo -n "Write the sudo password for your user $SELECTED_USER to install packages with privileges: " 
-        read -s SUDO_PASSWORD
+        read -rp "Write the sudo password for your user $SELECTED_USER to install packages with privileges: " SUDO_PASSWORD
         printf "\n"
 
     done 
@@ -97,7 +96,7 @@ function prepareEnvironmentForTheInstallation() {
     # We only need to provide the sudo password one time at the start of the script
     echo "$SUDO_PASSWORD" | sudo -S apt update -yqq
 
-    sudo apt upgrade -yqq && sudo apt install -yqq -o=Dpkg::Use-Pty=0  grc xclip imagemagick ent exiftool jq net-tools ipcalc iputils-ping socat cifs-utils tldr sqlite3 sqlitebrowser awscli docker.io docker-compose rsync parallel mongodb-clients freerdp2-x11
+    sudo apt upgrade -yqq && sudo apt install -yqq -o=Dpkg::Use-Pty=0  grc xclip imagemagick firmware-iwlwifi wpa_supplicant ent exiftool jq net-tools ipcalc iputils-ping socat cifs-utils tldr sqlite3 sqlitebrowser awscli docker.io docker-compose rsync parallel mongodb-clients freerdp2-x11
 
 }
 
