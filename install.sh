@@ -183,7 +183,7 @@ function setupInfoSecTools() {
     echo -e "${cyanColour}[ INFOSEC TOOLS ]$endColour${yellowColour} Installing infosec tools...$endColour"
    
     sudo apt remove python3-httpx subfinder && sudo apt autoremove --purge
-    sudo apt install -yqq -o=Dpkg::Use-Pty=0 firejail python3 python3-pip pynvim xxd ghidra tor sqlmap hashrat hashcat macchanger dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
+    sudo apt install -yqq -o=Dpkg::Use-Pty=0 firejail python3 python3-pip python3-pynvim xxd ghidra tor sqlmap hashrat hashcat macchanger dnsrecon wafw00f burpsuite whois amass massdns golang-go masscan nmap brutespray ffuf exploitdb openjdk-11-jdk maven
     
     if [[ ! -d "/usr/share/SecLists" ]]; then 
         wget -c -nc https://github.com/danielmiessler/SecLists/archive/master.zip -O SecList.zip \
